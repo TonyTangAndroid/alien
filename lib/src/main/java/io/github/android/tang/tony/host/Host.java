@@ -3,8 +3,11 @@ package io.github.android.tang.tony.host;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.content.IntentFilter;
 
 import javax.inject.Inject;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class Host {
     @Inject
@@ -17,6 +20,15 @@ public class Host {
 
     private Host() {
 
+    }
+
+    public static void register(Context context, ServiceStatusBroadcastReceiver receiver) {
+        IntentFilter filter = new IntentFilter(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
+        LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter);
+    }
+
+    public static void unregister(Context context, ServiceStatusBroadcastReceiver receiver) {
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
     }
 
     public HostComponent hostComponent() {

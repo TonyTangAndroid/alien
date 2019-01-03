@@ -3,7 +3,6 @@ package io.github.android.tang.tony.host;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import hugo.weaving.DebugLog;
@@ -19,18 +18,9 @@ public class ServiceStatusBroadcastReceiver extends BroadcastReceiver {
         this.callback = callback;
     }
 
-    public static void broadcast(Context context, boolean started) {
+    static void broadcast(Context context, boolean started) {
         Intent intent = new Intent(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE).putExtra(EXTRA_STATUS, started);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-    }
-
-    public static void register(Context context, ServiceStatusBroadcastReceiver receiver) {
-        IntentFilter filter = new IntentFilter(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
-        LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter);
-    }
-
-    public static void unregister(Context context, ServiceStatusBroadcastReceiver receiver) {
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
     }
 
     private void onStatusUpdated(boolean started) {
@@ -52,6 +42,6 @@ public class ServiceStatusBroadcastReceiver extends BroadcastReceiver {
     }
 
     public interface Callback {
-        void onUpdate(boolean started);
+        void onUpdate(boolean alive);
     }
 }

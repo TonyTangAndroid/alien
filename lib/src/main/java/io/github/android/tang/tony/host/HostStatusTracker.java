@@ -11,7 +11,7 @@ public class HostStatusTracker implements ServiceStatusBroadcastReceiver.Callbac
 
     @Inject
     public HostStatusTracker(Context context) {
-        ServiceStatusBroadcastReceiver.register(context, new ServiceStatusBroadcastReceiver(this));
+        Host.register(context, new ServiceStatusBroadcastReceiver(this));
     }
 
     public boolean alive() {
@@ -20,7 +20,7 @@ public class HostStatusTracker implements ServiceStatusBroadcastReceiver.Callbac
 
 
     @Override
-    public void onUpdate(boolean started) {
-        this.started = started;
+    public void onUpdate(boolean alive) {
+        this.started = alive;
     }
 }

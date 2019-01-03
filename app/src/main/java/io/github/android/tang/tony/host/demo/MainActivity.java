@@ -31,14 +31,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        ServiceStatusBroadcastReceiver.register(this, receiver);
+        Host.register(this, receiver);
         updateUI(Host.get().alive());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        ServiceStatusBroadcastReceiver.unregister(this, receiver);
+        Host.unregister(this, receiver);
     }
 
 
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onUpdate(boolean started) {
-        updateUI(started);
+    public void onUpdate(boolean alive) {
+        updateUI(alive);
     }
 }
