@@ -10,6 +10,8 @@ public class Host {
     @Inject
     Context context;
     @Inject
+    HostStatusTracker hostStatusTracker;
+    @Inject
     SharedPreferenceHelper sharedPreferenceHelper;
     private HostComponent hostComponent;
 
@@ -55,8 +57,8 @@ public class Host {
         }
     }
 
-    public boolean isLive() {
-        return sharedPreferenceHelper.enabled();
+    public boolean alive() {
+        return hostStatusTracker.alive();
     }
 
     private void startDemoServiceOnForeground() {

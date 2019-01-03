@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         ServiceStatusBroadcastReceiver.register(this, receiver);
-        updateUI(((App) getApplication()).getHelper().started());
+        updateUI(Host.get().alive());
     }
 
     @Override

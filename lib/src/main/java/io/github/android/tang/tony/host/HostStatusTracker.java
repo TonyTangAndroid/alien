@@ -2,18 +2,19 @@ package io.github.android.tang.tony.host;
 
 import android.content.Context;
 
-import hugo.weaving.DebugLog;
+import javax.inject.Inject;
 
-@DebugLog
-public class HostServiceStatusTracker implements ServiceStatusBroadcastReceiver.Callback {
+@HostScope
+public class HostStatusTracker implements ServiceStatusBroadcastReceiver.Callback {
 
     private boolean started;
 
-    public HostServiceStatusTracker(Context context) {
+    @Inject
+    public HostStatusTracker(Context context) {
         ServiceStatusBroadcastReceiver.register(context, new ServiceStatusBroadcastReceiver(this));
     }
 
-    public boolean started() {
+    public boolean alive() {
         return started;
     }
 
