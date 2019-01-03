@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jakewharton.hugo'
 
 ext {
-    action_stop_foreground_service = '.ACTION_STOP_FOREGROUND_SERVICE'
+    action_stop_foreground_service = 'ACTION_STOP_FOREGROUND_SERVICE'
 }
 android {
     compileSdkVersion 28
@@ -12,8 +12,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField 'String', 'ACTION_STOP_FOREGROUND_SERVICE', "\"" + "${applicationId}" + "${action_stop_foreground_service}" + "\""
-        manifestPlaceholders.action_stop_foreground_service = "${applicationId}" + "${action_stop_foreground_service}"
+        buildConfigField 'String', 'ACTION_STOP_FOREGROUND_SERVICE', "\"" + "${action_stop_foreground_service}" + "\""
+        manifestPlaceholders.action_stop_foreground_service = "${action_stop_foreground_service}"
 
 
     }

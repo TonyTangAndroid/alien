@@ -36,23 +36,22 @@ class NotificationHelper {
         getNotificationManager().createNotificationChannel(notificationChannel);
     }
 
-    private NotificationCompat.Builder buildOngoingNotification(String title, String body) {
+    private NotificationCompat.Builder buildOngoingNotification(String title, String body, Intent intent) {
         return new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setContentIntent(constructMainActivityPendingIntent())
                 .setSmallIcon(getSmallIcon())
-                .addAction(constructStopAction())
+                .addAction(constructStopAction(intent))
                 .setAutoCancel(true);
     }
 
-    private NotificationCompat.Action constructStopAction() {
+    private NotificationCompat.Action constructStopAction(Intent intent) {
         return new NotificationCompat.Action(getSmallIcon(), context.getString(R.string.stop),
-                constructStopPendingIntent());
+                constructStopPendingIntent(intent));
     }
 
-    private PendingIntent constructStopPendingIntent() {
-        Intent intent = ServiceAbortionActionBroadcastReceiver.constructIntent();
+    private PendingIntent constructStopPendingIntent(Intent intent) {
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -78,7 +77,9 @@ class NotificationHelper {
     public void bindAsForegroundService(Service service) {
         String title = context.getString(R.string.app_name);
         String content = context.getString(R.string.foreground_service_is_running);
-        Notification notification = buildOngoingNotification(title, content).build();
+        String applicationId = service.getApplication().getApplicationContext().getPackageName();
+        Intent intent = ServiceAbortionActionBroadcastReceiver.constructIntent(applicationId);
+        Notification notification = buildOngoingNotification(title, content, intent).build();
         service.startForeground(CHANNEL_ID.hashCode(), notification);
     }
 }

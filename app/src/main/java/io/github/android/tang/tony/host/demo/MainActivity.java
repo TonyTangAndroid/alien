@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import io.github.android.tang.tony.host.DemoService;
+import io.github.android.tang.tony.host.HostService;
 import io.github.android.tang.tony.host.ServiceStatusBroadcastReceiver;
 import io.github.android.tang.tony.host.SharedPreferenceHelper;
 
@@ -43,11 +43,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startForegroundService() {
-        DemoService.startDemoServiceOnForeground(this);
+        HostService.startDemoServiceOnForeground(this);
     }
 
     private void stopForegroundService() {
-        DemoService.stopDemoService(this);
+        HostService.stopDemoService(this);
     }
 
     private void updateUI(boolean started) {

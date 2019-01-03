@@ -11,7 +11,7 @@
             android:name="io.github.android.tang.tony.host.DeviceRebootedJobSchedulerService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <service android:name="io.github.android.tang.tony.host.DemoService" />
+        <service android:name="io.github.android.tang.tony.host.HostService" />
 
         <receiver
             android:name="io.github.android.tang.tony.host.DeviceRebootedBroadcastReceiver"

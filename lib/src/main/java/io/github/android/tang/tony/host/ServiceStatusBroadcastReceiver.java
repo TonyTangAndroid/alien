@@ -12,7 +12,6 @@ import timber.log.Timber;
 @DebugLog
 public class ServiceStatusBroadcastReceiver extends BroadcastReceiver {
 
-    private static final String ACTION_NOTIFY_FOREGROUND_SERVICE = BuildConfig.APPLICATION_ID + ".ACTION_NOTIFY_FOREGROUND_SERVICE";
     private static final String EXTRA_STATUS = "extra_status";
     private final Callback callback;
 
@@ -21,12 +20,12 @@ public class ServiceStatusBroadcastReceiver extends BroadcastReceiver {
     }
 
     public static void broadcast(Context context, boolean started) {
-        Intent intent = new Intent(ACTION_NOTIFY_FOREGROUND_SERVICE).putExtra(EXTRA_STATUS, started);
+        Intent intent = new Intent(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE).putExtra(EXTRA_STATUS, started);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     public static void register(Context context, ServiceStatusBroadcastReceiver receiver) {
-        IntentFilter filter = new IntentFilter(ACTION_NOTIFY_FOREGROUND_SERVICE);
+        IntentFilter filter = new IntentFilter(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter);
     }
 

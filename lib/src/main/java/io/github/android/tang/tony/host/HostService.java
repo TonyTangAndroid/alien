@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import hugo.weaving.DebugLog;
 
 @DebugLog
-public class DemoService extends Service {
+public class HostService extends Service {
 
     private NotificationHelper notificationHelper;
 
@@ -23,7 +23,7 @@ public class DemoService extends Service {
     }
 
     public static Intent constructDemoService(Context context) {
-        return new Intent(context, DemoService.class);
+        return new Intent(context, HostService.class);
     }
 
     @Override

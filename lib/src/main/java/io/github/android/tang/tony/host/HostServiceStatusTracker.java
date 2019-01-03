@@ -5,11 +5,11 @@ import android.content.Context;
 import hugo.weaving.DebugLog;
 
 @DebugLog
-public class DemoServiceStatusTracker implements ServiceStatusBroadcastReceiver.Callback {
+public class HostServiceStatusTracker implements ServiceStatusBroadcastReceiver.Callback {
 
     private boolean started;
 
-    public DemoServiceStatusTracker(Context context) {
+    public HostServiceStatusTracker(Context context) {
         ServiceStatusBroadcastReceiver.register(context, new ServiceStatusBroadcastReceiver(this));
     }
 

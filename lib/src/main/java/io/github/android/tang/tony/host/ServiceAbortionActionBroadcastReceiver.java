@@ -12,12 +12,13 @@ public class ServiceAbortionActionBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         new SharedPreferenceHelper(context).update(false);
-        context.stopService(DemoService.constructDemoService(context));
+        context.stopService(HostService.constructDemoService(context));
     }
 
-    public static Intent constructIntent() {
+    public static Intent
+    constructIntent(String applicationId) {
         Intent intent = new Intent(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
-        intent.setPackage(BuildConfig.APPLICATION_ID);//Must be set to support Android Oreo.
+        intent.setPackage(applicationId);//Must be set to support Android Oreo.
         return intent;
     }
 

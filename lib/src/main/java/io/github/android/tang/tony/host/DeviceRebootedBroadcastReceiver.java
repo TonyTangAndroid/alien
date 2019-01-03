@@ -29,7 +29,7 @@ public class DeviceRebootedBroadcastReceiver extends BroadcastReceiver {
     }
 
     private void startService(Context context) {
-        Intent serviceToBeStarted = DemoService.constructDemoService(context);
+        Intent serviceToBeStarted = HostService.constructDemoService(context);
         if (supportToStartForegroundService()) {
             startServiceDirectly(context, serviceToBeStarted);
         } else {
