@@ -6,4 +6,4 @@
 4, Support dynamically registering and deregistering the commensals.
 5, The host will die on the last deregisteration of commensal.
 6, The host will be born again on the first registration of commensal.
- 
+7, The host provide an action of resume if such action is provided.
