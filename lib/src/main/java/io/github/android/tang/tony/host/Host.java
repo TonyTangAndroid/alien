@@ -2,12 +2,17 @@ package io.github.android.tang.tony.host;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import timber.log.Timber;
 
 public class Host {
     @Inject
@@ -18,18 +23,33 @@ public class Host {
     SharedPreferenceHelper sharedPreferenceHelper;
     private HostComponent hostComponent;
 
+    Map<ServiceStatusBroadcastReceiver.Callback, BroadcastReceiver> map = new HashMap<>();
+
     private Host() {
 
     }
 
-    public static void register(Context context, ServiceStatusBroadcastReceiver receiver) {
-        IntentFilter filter = new IntentFilter(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
-        LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter);
+
+    public void register(ServiceStatusBroadcastReceiver.Callback callback) {
+        if (!map.containsKey(callback)) {
+            IntentFilter filter = new IntentFilter(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
+            BroadcastReceiver receiver = new ServiceStatusBroadcastReceiver(callback);
+            LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter);
+            map.put(callback, receiver);
+        } else {
+            Timber.w("Callback has already been registered.");
+        }
     }
 
-    public static void unregister(Context context, ServiceStatusBroadcastReceiver receiver) {
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver);
+    public void deregister(ServiceStatusBroadcastReceiver.Callback callback) {
+        BroadcastReceiver registered = map.remove(callback);
+        if (registered != null) {
+            LocalBroadcastManager.getInstance(context).unregisterReceiver(registered);
+        } else {
+            Timber.w("Callback has not been registered.");
+        }
     }
+
 
     public HostComponent hostComponent() {
         return hostComponent;

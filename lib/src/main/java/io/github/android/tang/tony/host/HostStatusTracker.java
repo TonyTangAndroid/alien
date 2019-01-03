@@ -1,7 +1,5 @@
 package io.github.android.tang.tony.host;
 
-import android.content.Context;
-
 import javax.inject.Inject;
 
 @HostScope
@@ -10,8 +8,8 @@ public class HostStatusTracker implements ServiceStatusBroadcastReceiver.Callbac
     private boolean started;
 
     @Inject
-    public HostStatusTracker(Context context) {
-        Host.register(context, new ServiceStatusBroadcastReceiver(this));
+    public HostStatusTracker() {
+        Host.get().register(this);
     }
 
     public boolean alive() {

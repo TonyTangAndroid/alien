@@ -1,7 +1,5 @@
 package io.github.android.tang.tony.host.demo;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,11 +13,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView tv_hint;
     private Button btn_action;
-    private ServiceStatusBroadcastReceiver receiver = new ServiceStatusBroadcastReceiver(this);
-
-    public static Intent constructIntent(Context context) {
-        return new Intent(context, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,14 +24,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        Host.register(this, receiver);
+        Host.get().register(this);
         updateUI(Host.get().alive());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Host.unregister(this, receiver);
+        Host.get().deregister(this);
     }
 
 

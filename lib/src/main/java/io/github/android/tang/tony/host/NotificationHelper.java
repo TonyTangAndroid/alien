@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
+import java.util.Objects;
+
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import hugo.weaving.DebugLog;
@@ -62,7 +64,9 @@ class NotificationHelper {
 
     private Intent mainActivityIntent() {
         PackageManager pm = context.getPackageManager();
-        return pm.getLaunchIntentForPackage(context.getPackageName());
+        Intent intent = pm.getLaunchIntentForPackage(context.getPackageName());
+        return Objects.requireNonNull(intent)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
     private int getSmallIcon() {
