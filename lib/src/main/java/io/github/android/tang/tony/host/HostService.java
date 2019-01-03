@@ -15,15 +15,7 @@ public class HostService extends Service {
     private NotificationHelper notificationHelper;
 
 
-    public static void startDemoServiceOnForeground(Context context) {
-        context.startService(constructDemoService(context));
-    }
-
-    public static void stopDemoService(Context context) {
-        context.stopService(constructDemoService(context));
-    }
-
-    public static Intent constructDemoService(Context context) {
+    static Intent constructDemoService(Context context) {
         return new Intent(context, HostService.class);
     }
 

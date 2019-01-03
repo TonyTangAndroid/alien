@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import io.github.android.tang.tony.host.HostService;
+import io.github.android.tang.tony.host.Host;
 import io.github.android.tang.tony.host.ServiceStatusBroadcastReceiver;
 import io.github.android.tang.tony.host.SharedPreferenceHelper;
 
@@ -27,6 +27,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bindView();
+        if (new SharedPreferenceHelper(this).enabled()){
+            Host.startDemoServiceOnForeground(this);
+        }
     }
 
     @Override
@@ -43,11 +46,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startForegroundService() {
-        HostService.startDemoServiceOnForeground(this);
+        Host.startDemoServiceOnForeground(this);
     }
 
     private void stopForegroundService() {
-        HostService.stopDemoService(this);
+        Host.stopDemoService(this);
     }
 
     private void updateUI(boolean started) {
