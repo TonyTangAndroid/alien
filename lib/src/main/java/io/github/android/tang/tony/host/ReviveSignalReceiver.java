@@ -3,7 +3,6 @@ package io.github.android.tang.tony.host;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import javax.inject.Inject;
 
@@ -14,21 +13,23 @@ import timber.log.Timber;
 public class ReviveSignalReceiver extends BroadcastReceiver {
 
     @Inject
+    Creator creator;
+    @Inject
     SharedPreferenceHelper preferenceHelper;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Host.get().hostComponent().inject(this);
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            onDeviceRebooted(context);
+            onDeviceRebooted();
         } else {
             throw new RuntimeException("Unsupported action : " + intent.getAction());
         }
     }
 
-    private void onDeviceRebooted(Context context) {
+    private void onDeviceRebooted() {
         if (selfReviveEnabled() && wasLiving()) {
-            revive(context);
+            creator.revive();
         } else {
             Timber.d("Service has not been enabled");
         }
@@ -42,24 +43,4 @@ public class ReviveSignalReceiver extends BroadcastReceiver {
         return true;
     }
 
-    private void revive(Context context) {
-        Intent hostToBeBorn = HostService.constructHostIntent(context);
-        if (selfReviveSupported()) {
-            selfRevive(context, hostToBeBorn);
-        } else {
-            reviveThroughHandOfGod(context, hostToBeBorn);
-        }
-    }
-
-    private void reviveThroughHandOfGod(Context context, Intent hostToBeBorn) {
-        ParturitionService.kickOff(context, hostToBeBorn);
-    }
-
-    private void selfRevive(Context context, Intent serviceToBeStarted) {
-        context.startService(serviceToBeStarted);
-    }
-
-    private boolean selfReviveSupported() {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
-    }
 }

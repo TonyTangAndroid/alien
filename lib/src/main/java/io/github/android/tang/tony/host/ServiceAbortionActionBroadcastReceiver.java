@@ -4,15 +4,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import javax.inject.Inject;
+
 import hugo.weaving.DebugLog;
 
 @DebugLog
 public class ServiceAbortionActionBroadcastReceiver extends BroadcastReceiver {
 
+    @Inject
+    Creator creator;
+    @Inject
+    SharedPreferenceHelper sharedPreferenceHelper;
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        new SharedPreferenceHelper(context).update(false);
-        context.stopService(HostService.constructHostIntent(context));
+        Host.get().hostComponent().inject(this);
+        sharedPreferenceHelper.update(false);
+        creator.destroy();
     }
 
     public static Intent constructIntent(String applicationId) {

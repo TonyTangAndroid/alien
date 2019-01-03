@@ -15,6 +15,7 @@ interface HostComponent {
     Context context();
 
     void inject(ReviveSignalReceiver broadcastReceiver);
+    void inject(ServiceAbortionActionBroadcastReceiver broadcastReceiver);
 
     @Component.Builder
     interface Builder {

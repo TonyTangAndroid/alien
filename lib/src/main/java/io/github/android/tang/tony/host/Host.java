@@ -18,6 +18,8 @@ public class Host implements ServiceStatusBroadcastReceiver.Callback {
     @Inject
     Context context;
     @Inject
+    Creator creator;
+    @Inject
     SharedPreferenceHelper sharedPreferenceHelper;
     private HostComponent hostComponent;
 
@@ -87,21 +89,13 @@ public class Host implements ServiceStatusBroadcastReceiver.Callback {
 
     private void mutate(boolean newStatus) {
         if (newStatus) {
-            deliver();
+            creator.deliver();
         } else {
-            destruct();
+            creator.destroy();
         }
     }
 
     public boolean alive() {
         return alive;
-    }
-
-    private void deliver() {
-        context.startService(HostService.constructHostIntent(context));
-    }
-
-    private void destruct() {
-        context.stopService(HostService.constructHostIntent(context));
     }
 }
