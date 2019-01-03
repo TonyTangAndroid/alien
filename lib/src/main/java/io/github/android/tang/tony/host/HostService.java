@@ -1,5 +1,6 @@
 package io.github.android.tang.tony.host;
 
+import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,14 @@ public class HostService extends Service {
         ServiceStatusBroadcastReceiver.broadcast(this, true);
         notificationHelper = new NotificationHelper(this);
         startForegroundService();
+        onBorn();
+    }
+
+    private void onBorn() {
+        Application application = getApplication();
+        if (application instanceof IHost) {
+            ((IHost) application).onBorn();
+        }
     }
 
     private void startForegroundService() {
@@ -56,5 +65,13 @@ public class HostService extends Service {
     public void onDestroy() {
         super.onDestroy();
         ServiceStatusBroadcastReceiver.broadcast(this, false);
+        onDeceased();
+    }
+
+    private void onDeceased() {
+        Application application = getApplication();
+        if (application instanceof IHost) {
+            ((IHost) application).onDeceased();
+        }
     }
 }
