@@ -77,7 +77,6 @@ public class Host implements ServiceStatusBroadcastReceiver.Callback {
     private void initialize(Application application) {
         hostComponent = DaggerHostComponent.builder().application(application).build();
         hostComponent.inject(this);
-        creator.mutate(sharedPreferenceHelper.enabled());
     }
 
     public void toggleStatus() {

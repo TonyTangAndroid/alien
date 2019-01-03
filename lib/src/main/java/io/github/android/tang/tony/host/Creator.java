@@ -15,8 +15,8 @@ public class Creator {
     @Inject
     public Creator(Context context, SharedPreferenceHelper sharedPreferenceHelper) {
         this.context = context;
-
         this.sharedPreferenceHelper = sharedPreferenceHelper;
+        mutate(sharedPreferenceHelper.enabled());
     }
 
     public void destroy() {
@@ -42,7 +42,6 @@ public class Creator {
             destroy();
         }
     }
-
 
     public void revive() {
         if (selfReviveSupported()) {
