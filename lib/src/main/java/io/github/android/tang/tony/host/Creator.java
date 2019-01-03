@@ -6,6 +6,8 @@ import android.os.Build;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 @HostScope
 public class Creator {
 
@@ -17,6 +19,22 @@ public class Creator {
         this.context = context;
         this.sharedPreferenceHelper = sharedPreferenceHelper;
         mutate(sharedPreferenceHelper.enabled());
+    }
+
+    public void onDeviceRebooted() {
+        if (selfReviveEnabled() && wasLiving()) {
+            revive();
+        } else {
+            Timber.d("Service has not been enabled");
+        }
+    }
+
+    private boolean wasLiving() {
+        return sharedPreferenceHelper.enabled();
+    }
+
+    private boolean selfReviveEnabled() {
+        return true;
     }
 
     public void destroy() {

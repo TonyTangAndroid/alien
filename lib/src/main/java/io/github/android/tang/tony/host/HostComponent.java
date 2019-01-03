@@ -2,6 +2,7 @@ package io.github.android.tang.tony.host;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import dagger.BindsInstance;
 import dagger.Component;
@@ -14,7 +15,10 @@ interface HostComponent {
 
     Context context();
 
+    SharedPreferences sharedPreferences();
+
     void inject(ReviveSignalReceiver broadcastReceiver);
+
     void inject(ServiceAbortionActionBroadcastReceiver broadcastReceiver);
 
     @Component.Builder
