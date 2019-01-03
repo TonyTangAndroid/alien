@@ -10,21 +10,26 @@ import androidx.core.app.JobIntentService;
 import hugo.weaving.DebugLog;
 
 @DebugLog
-public class DeviceRebootedJobSchedulerService extends JobIntentService {
+public class ParturitionService extends JobIntentService {
 
-    private static final int JOB_ID_TO_START_FOREGROUND_SERVICE = 10083;
+    private static final int BIRTH_ID_AS_JOB_ID = 10083;
 
-    public static void enqueueWork(Context context, Intent work) {
-        enqueueWork(context, DeviceRebootedJobSchedulerService.class, hashcodeClassNameAsJobId(), work);
+    public static void kickOff(Context context, Intent work) {
+        enqueueWork(context, ParturitionService.class, birthId(), work);
     }
 
-    private static int hashcodeClassNameAsJobId() {
-        return JOB_ID_TO_START_FOREGROUND_SERVICE;
+    private static int birthId() {
+        return BIRTH_ID_AS_JOB_ID;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onHandleWork(@NonNull Intent work) {
+        deliver(work);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void deliver(@NonNull Intent work) {
         startForegroundService(work);
     }
 

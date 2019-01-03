@@ -15,7 +15,7 @@ public class HostService extends Service {
     private NotificationHelper notificationHelper;
 
 
-    static Intent constructDemoService(Context context) {
+    static Intent constructHostIntent(Context context) {
         return new Intent(context, HostService.class);
     }
 

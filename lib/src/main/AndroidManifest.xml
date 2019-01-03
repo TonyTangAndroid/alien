@@ -8,13 +8,13 @@
     <application>
 
         <service
-            android:name="io.github.android.tang.tony.host.DeviceRebootedJobSchedulerService"
+            android:name="io.github.android.tang.tony.host.ParturitionService"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service android:name="io.github.android.tang.tony.host.HostService" />
 
         <receiver
-            android:name="io.github.android.tang.tony.host.DeviceRebootedBroadcastReceiver"
+            android:name="io.github.android.tang.tony.host.ReviveSignalReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

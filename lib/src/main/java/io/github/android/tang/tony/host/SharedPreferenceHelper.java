@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import hugo.weaving.DebugLog;
 
+@HostScope
 @DebugLog
 public class SharedPreferenceHelper {
 

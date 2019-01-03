@@ -11,9 +11,14 @@ public class Host {
     Context context;
     @Inject
     SharedPreferenceHelper sharedPreferenceHelper;
+    private HostComponent hostComponent;
 
     private Host() {
 
+    }
+
+    public HostComponent hostComponent() {
+        return hostComponent;
     }
 
     private static class HostHolder {
@@ -30,7 +35,8 @@ public class Host {
     }
 
     private void initialize(Application application) {
-        DaggerHostComponent.builder().application(application).build().inject(this);
+        hostComponent = DaggerHostComponent.builder().application(application).build();
+        hostComponent.inject(this);
         mutate(sharedPreferenceHelper.enabled());
     }
 
@@ -54,10 +60,10 @@ public class Host {
     }
 
     private void startDemoServiceOnForeground() {
-        context.startService(HostService.constructDemoService(context));
+        context.startService(HostService.constructHostIntent(context));
     }
 
     private void stopDemoService() {
-        context.stopService(HostService.constructDemoService(context));
+        context.stopService(HostService.constructHostIntent(context));
     }
 }
