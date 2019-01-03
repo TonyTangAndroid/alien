@@ -87,9 +87,9 @@ public class Host implements ServiceStatusBroadcastReceiver.Callback {
 
     private void mutate(boolean newStatus) {
         if (newStatus) {
-            startDemoServiceOnForeground();
+            deliver();
         } else {
-            stopDemoService();
+            destruct();
         }
     }
 
@@ -97,11 +97,11 @@ public class Host implements ServiceStatusBroadcastReceiver.Callback {
         return alive;
     }
 
-    private void startDemoServiceOnForeground() {
+    private void deliver() {
         context.startService(HostService.constructHostIntent(context));
     }
 
-    private void stopDemoService() {
+    private void destruct() {
         context.stopService(HostService.constructHostIntent(context));
     }
 }
