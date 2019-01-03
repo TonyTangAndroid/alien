@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import edu.cs4730.foregroundservicedemo.BuildConfig;
 import hugo.weaving.DebugLog;
 
 @DebugLog

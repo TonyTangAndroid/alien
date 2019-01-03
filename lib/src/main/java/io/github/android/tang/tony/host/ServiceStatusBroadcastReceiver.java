@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import edu.cs4730.foregroundservicedemo.BuildConfig;
 import hugo.weaving.DebugLog;
 import timber.log.Timber;
 

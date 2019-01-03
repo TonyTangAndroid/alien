@@ -12,7 +12,6 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
-import edu.cs4730.foregroundservicedemo.R;
 import hugo.weaving.DebugLog;
 
 @DebugLog
