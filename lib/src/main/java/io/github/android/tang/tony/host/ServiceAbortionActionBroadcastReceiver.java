@@ -19,8 +19,7 @@ public class ServiceAbortionActionBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Host.get().hostComponent().inject(this);
-        sharedPreferenceHelper.update(false);
-        creator.destroy();
+        creator.destruct();
     }
 
     public static Intent constructIntent(String applicationId) {

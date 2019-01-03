@@ -81,6 +81,13 @@ public class Creator {
         context.startService(conceive());
     }
 
+
+    public void destruct() {
+        sharedPreferenceHelper.update(false);
+        destroy();
+    }
+
+
     private boolean selfReviveSupported() {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
     }
