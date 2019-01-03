@@ -10,11 +10,13 @@ import javax.inject.Inject;
 public class Creator {
 
     private final Context context;
+    private final SharedPreferenceHelper sharedPreferenceHelper;
 
     @Inject
-    public Creator(Context context) {
+    public Creator(Context context, SharedPreferenceHelper sharedPreferenceHelper) {
         this.context = context;
 
+        this.sharedPreferenceHelper = sharedPreferenceHelper;
     }
 
     public void destroy() {
@@ -25,6 +27,22 @@ public class Creator {
     public void deliver() {
         context.startService(conceive());
     }
+
+    public void toggleStatus() {
+        boolean previousStatus = sharedPreferenceHelper.enabled();
+        boolean newStatus = !previousStatus;
+        mutate(newStatus);
+        sharedPreferenceHelper.update(newStatus);
+    }
+
+    public void mutate(boolean newStatus) {
+        if (newStatus) {
+            deliver();
+        } else {
+            destroy();
+        }
+    }
+
 
     public void revive() {
         if (selfReviveSupported()) {

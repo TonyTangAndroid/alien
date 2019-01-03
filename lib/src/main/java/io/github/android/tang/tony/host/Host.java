@@ -21,6 +21,7 @@ public class Host implements ServiceStatusBroadcastReceiver.Callback {
     Creator creator;
     @Inject
     SharedPreferenceHelper sharedPreferenceHelper;
+
     private HostComponent hostComponent;
 
     Map<ServiceStatusBroadcastReceiver.Callback, BroadcastReceiver> map = new HashMap<>();
@@ -29,7 +30,6 @@ public class Host implements ServiceStatusBroadcastReceiver.Callback {
     private Host() {
 
     }
-
 
     public void register(ServiceStatusBroadcastReceiver.Callback callback) {
         if (!map.containsKey(callback)) {
@@ -77,22 +77,11 @@ public class Host implements ServiceStatusBroadcastReceiver.Callback {
     private void initialize(Application application) {
         hostComponent = DaggerHostComponent.builder().application(application).build();
         hostComponent.inject(this);
-        mutate(sharedPreferenceHelper.enabled());
+        creator.mutate(sharedPreferenceHelper.enabled());
     }
 
     public void toggleStatus() {
-        boolean previousStatus = sharedPreferenceHelper.enabled();
-        boolean newStatus = !previousStatus;
-        mutate(newStatus);
-        sharedPreferenceHelper.update(newStatus);
-    }
-
-    private void mutate(boolean newStatus) {
-        if (newStatus) {
-            creator.deliver();
-        } else {
-            creator.destroy();
-        }
+        creator.toggleStatus();
     }
 
     public boolean alive() {
