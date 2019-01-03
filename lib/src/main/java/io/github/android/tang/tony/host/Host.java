@@ -14,16 +14,15 @@ import javax.inject.Inject;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import timber.log.Timber;
 
-public class Host {
+public class Host implements ServiceStatusBroadcastReceiver.Callback {
     @Inject
     Context context;
-    @Inject
-    HostStatusTracker hostStatusTracker;
     @Inject
     SharedPreferenceHelper sharedPreferenceHelper;
     private HostComponent hostComponent;
 
     Map<ServiceStatusBroadcastReceiver.Callback, BroadcastReceiver> map = new HashMap<>();
+    private boolean alive;
 
     private Host() {
 
@@ -53,6 +52,11 @@ public class Host {
 
     public HostComponent hostComponent() {
         return hostComponent;
+    }
+
+    @Override
+    public void onUpdate(boolean alive) {
+        this.alive = alive;
     }
 
     private static class HostHolder {
@@ -90,7 +94,7 @@ public class Host {
     }
 
     public boolean alive() {
-        return hostStatusTracker.alive();
+        return alive;
     }
 
     private void startDemoServiceOnForeground() {
