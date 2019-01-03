@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bindView();
-        if (new SharedPreferenceHelper(this).enabled()){
+        if (new SharedPreferenceHelper(getApplicationContext()).enabled()) {
             Host.startDemoServiceOnForeground(this);
         }
     }
