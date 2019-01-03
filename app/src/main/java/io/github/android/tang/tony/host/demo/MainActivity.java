@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import io.github.android.tang.tony.host.Host;
 import io.github.android.tang.tony.host.ServiceStatusBroadcastReceiver;
-import io.github.android.tang.tony.host.SharedPreferenceHelper;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ServiceStatusBroadcastReceiver.Callback {
 
@@ -42,13 +41,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ServiceStatusBroadcastReceiver.unregister(this, receiver);
     }
 
-    private void startForegroundService() {
-        Host.startDemoServiceOnForeground(this);
-    }
-
-    private void stopForegroundService() {
-        Host.stopDemoService(this);
-    }
 
     private void updateUI(boolean started) {
         if (started) {
@@ -69,17 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        boolean started = ((App) getApplication()).getHelper().started();
-        if (started) {
-            stopForegroundService();
-        } else {
-            startForegroundService();
-        }
-        updateServiceEnabledStatus(!started);
-    }
-
-    private void updateServiceEnabledStatus(boolean enabled) {
-        new SharedPreferenceHelper(getApplicationContext()).update(enabled);
+        Host.get().toggleStatus();
     }
 
     @Override
