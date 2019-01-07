@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">ForegroundServiceDemo</string>
-    <string name="channel_name">Foreground Service Channel</string>
-    <string name="channel_description">This channel is to indicate whether the foreground service is running or not.</string>
-    <string name="foreground_service_is_running">Foreground Service is running</string>
-    <string name="tv_hint_stop_service">Foreground service is running. Press the button to stop.</string>
-    <string name="tv_hint_start_service">Foreground service has not been running. Press the button to start.</string>
+    <string name="channel_name">Host Foreground Service Channel</string>
+    <string name="channel_description">This channel is to indicate whether the host foreground service is running or not.</string>
+    <string name="host_alive">The host is alive.</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="host_sleep">The host is sleeping.</string>
 </resources>

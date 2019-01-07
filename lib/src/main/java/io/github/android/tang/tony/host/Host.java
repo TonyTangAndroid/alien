@@ -6,84 +6,181 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.annotation.MainThread;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import hugo.weaving.DebugLog;
+import io.github.android.tang.tony.host.config.Config;
+import io.github.android.tang.tony.host.config.NotificationConfig;
+import io.github.android.tang.tony.host.config.NotificationConfigBuilder;
 import timber.log.Timber;
 
-public class Host implements ServiceStatusBroadcastReceiver.Callback {
+@DebugLog
+public class Host implements HostStatusCallback {
+    @Inject
+    Agent agent;
+    @Inject
+    Config config;
     @Inject
     Context context;
-    @Inject
-    Creator creator;
-    @Inject
-    SharedPreferenceHelper sharedPreferenceHelper;
-
+    Set<HostStatusCallback> map = new HashSet<>();
     private HostComponent hostComponent;
+    @HostStatus
+    private int status;
 
-    Map<ServiceStatusBroadcastReceiver.Callback, BroadcastReceiver> map = new HashMap<>();
-    private boolean alive;
-
+    @DebugLog
     private Host() {
-
-    }
-
-    public void register(ServiceStatusBroadcastReceiver.Callback callback) {
-        if (!map.containsKey(callback)) {
-            IntentFilter filter = new IntentFilter(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
-            BroadcastReceiver receiver = new ServiceStatusBroadcastReceiver(callback);
-            LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter);
-            map.put(callback, receiver);
-        } else {
-            Timber.w("Callback has already been registered.");
-        }
-    }
-
-    public void deregister(ServiceStatusBroadcastReceiver.Callback callback) {
-        BroadcastReceiver registered = map.remove(callback);
-        if (registered != null) {
-            LocalBroadcastManager.getInstance(context).unregisterReceiver(registered);
-        } else {
-            Timber.w("Callback has not been registered.");
-        }
-    }
-
-
-    public HostComponent hostComponent() {
-        return hostComponent;
-    }
-
-    @Override
-    public void onUpdate(boolean alive) {
-        this.alive = alive;
-    }
-
-    private static class HostHolder {
-        @SuppressLint("StaticFieldLeak")
-        private static final Host INSTANCE = new Host();
     }
 
     public static Host get() {
         return HostHolder.INSTANCE;
     }
 
+    @SuppressWarnings("unused")
     public static void init(Application application) {
-        get().initialize(application);
+        get().initialize(defaultConfig(application));
     }
 
-    private void initialize(Application application) {
-        hostComponent = DaggerHostComponent.builder().application(application).build();
+    private static Config defaultConfig(Application application) {
+        NotificationConfig notificationConfig = NotificationConfigBuilder.defaultConfig(application);
+        return Config.builder().notificationConfig(notificationConfig).application(application).build();
+    }
+
+    public static void init(Config config) {
+        get().initialize(config);
+    }
+
+    public void addRegister(HostStatusCallback callback) {
+        if (!map.add(callback)) {
+            Timber.w("Callback has already been registered.");
+        }
+    }
+
+    private void register() {
+        IntentFilter filter = new IntentFilter(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
+        BroadcastReceiver receiver = new HostStatusBroadcastReceiver(this);
+        LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter);
+    }
+
+    public void removeRegister(HostStatusCallback callback) {
+        if (!map.remove(callback)) {
+            Timber.w("Callback has not been registered.");
+        }
+    }
+
+    public HostComponent hostComponent() {
+        return hostComponent;
+    }
+
+    @MainThread
+    @Override
+    public void onUpdate(@HostStatus int status) {
+        this.status = status;
+        for (HostStatusCallback callback : map) {
+            callback.onUpdate(status);
+        }
+    }
+
+    private void initialize(Config config) {
+        hostComponent = DaggerHostComponent.builder().config(config).build();
         hostComponent.inject(this);
+        register();
+
     }
 
-    public void toggleStatus() {
-        creator.toggleStatus();
+    public void activate() {
+        agent.activate();
     }
 
-    public boolean alive() {
-        return alive;
+    public void sleep() {
+        agent.sleep();
+    }
+
+    public void destruct() {
+        agent.destruct();
+    }
+
+    public void restore() {
+        Timber.d("Attempting to restore host.");
+        if (alive()) {
+            Timber.v("Host has already become alive.");
+        } else {
+            restore(agent.status());
+        }
+
+    }
+
+    public void revive() {
+        Timber.d("Attempting to revive host.");
+        if (enabled()) {
+            revive(agent.status());
+        } else {
+            Timber.d("Revive is not enabled.");
+        }
+    }
+
+    private void revive(HostStatusPersister.InternalStatus status) {
+        switch (status) {
+            case NONE:
+                toBeActivated();
+                break;
+            case ON_CALL:
+                toBeWakenUp();
+                break;
+            case ACTIVATED:
+                reviveThroughAgent();
+                break;
+        }
+    }
+
+    private boolean alive() {
+        return status() == Status.ALIVE;
+    }
+
+    private void restore(HostStatusPersister.InternalStatus status) {
+        switch (status) {
+            case NONE:
+                toBeActivated();
+                break;
+            case ON_CALL:
+                toBeWakenUp();
+                break;
+            case ACTIVATED:
+                reviveThroughAgent();
+                break;
+        }
+    }
+
+    private void reviveThroughAgent() {
+        agent.revive();
+    }
+
+    private void toBeWakenUp() {
+        HostStatusBroadcastReceiver.broadcast(context, Status.SLEEP);
+        Timber.d("Host had been manually put into sleep. Hence it requires to be waken up manually to become alive.");
+    }
+
+    private void toBeActivated() {
+        Timber.d("Host has not been born yet. It requires to be activated to become alive.");
+        HostStatusBroadcastReceiver.broadcast(context, Status.NONE);
+    }
+
+    private boolean enabled() {
+        return !config.disableRevive();
+    }
+
+
+    @HostStatus
+    public int status() {
+        return status;
+    }
+
+    private static class HostHolder {
+        @SuppressLint("StaticFieldLeak")
+        private static final Host INSTANCE = new Host();
     }
 }

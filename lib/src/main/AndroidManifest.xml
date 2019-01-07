@@ -8,7 +8,7 @@
     <application>
 
         <service
-            android:name="io.github.android.tang.tony.host.ParturitionService"
+            android:name="io.github.android.tang.tony.host.Creator"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <service android:name="io.github.android.tang.tony.host.HostService" />

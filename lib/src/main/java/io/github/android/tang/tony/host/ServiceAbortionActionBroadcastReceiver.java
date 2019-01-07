@@ -11,21 +11,37 @@ import hugo.weaving.DebugLog;
 @DebugLog
 public class ServiceAbortionActionBroadcastReceiver extends BroadcastReceiver {
 
+    private static final String EXTRA_ACTION_TYPE = "extra_action_type";
     @Inject
-    Creator creator;
+    Agent agent;
     @Inject
-    SharedPreferenceHelper sharedPreferenceHelper;
+    HostStatusPersister sharedPreferenceHelper;
+
+    public static Intent constructIntent(String applicationId, @ActionType int action) {
+        Intent intent = new Intent(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
+        intent.putExtra(EXTRA_ACTION_TYPE, action);
+        intent.setPackage(applicationId);//Must be set to support Android Oreo.
+        return intent;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
         Host.get().hostComponent().inject(this);
-        creator.destruct();
+        onActionTriggered(intent.getIntExtra(EXTRA_ACTION_TYPE, Action.STOP));
     }
 
-    public static Intent constructIntent(String applicationId) {
-        Intent intent = new Intent(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
-        intent.setPackage(applicationId);//Must be set to support Android Oreo.
-        return intent;
+    private void onActionTriggered(@ActionType int action) {
+        switch (action) {
+            case Action.PAUSE:
+                agent.sleep();
+                break;
+            case Action.RESUME:
+                agent.activate();
+                break;
+            case Action.STOP:
+                agent.destruct();
+                break;
+        }
     }
 
 }

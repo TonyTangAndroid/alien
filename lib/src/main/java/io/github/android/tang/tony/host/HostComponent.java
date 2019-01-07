@@ -1,11 +1,10 @@
 package io.github.android.tang.tony.host;
 
-import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import dagger.BindsInstance;
 import dagger.Component;
+import io.github.android.tang.tony.host.config.Config;
 
 @HostScope
 @Component(modules = HostModule.class)
@@ -13,11 +12,11 @@ interface HostComponent {
 
     void inject(Host host);
 
+    Config config();
+
     Context context();
 
-    SharedPreferences sharedPreferences();
-
-    void inject(ReviveSignalReceiver broadcastReceiver);
+    HostService.HostServiceComponent.Builder hostServiceComponentBuilder();
 
     void inject(ServiceAbortionActionBroadcastReceiver broadcastReceiver);
 
@@ -26,7 +25,7 @@ interface HostComponent {
         HostComponent build();
 
         @BindsInstance
-        Builder application(Application application);
+        Builder config(Config config);
 
     }
 }

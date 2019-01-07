@@ -5,60 +5,112 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.MainThread;
 import androidx.appcompat.app.AppCompatActivity;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import hugo.weaving.DebugLog;
 import io.github.android.tang.tony.host.Host;
-import io.github.android.tang.tony.host.ServiceStatusBroadcastReceiver;
+import io.github.android.tang.tony.host.HostStatus;
+import io.github.android.tang.tony.host.HostStatusCallback;
+import io.github.android.tang.tony.host.Status;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, ServiceStatusBroadcastReceiver.Callback {
+@DebugLog
+public class MainActivity extends AppCompatActivity implements HostStatusCallback {
 
-    private TextView tv_hint;
-    private Button btn_action;
+    @BindView(R.id.tv_hint)
+    TextView tv_hint;
+    @BindView(R.id.btn_activate)
+    Button btn_activate;
+    @BindView(R.id.btn_pause)
+    Button btn_pause;
+    @BindView(R.id.btn_resume)
+    Button btn_resume;
+    @BindView(R.id.btn_destruct)
+    Button btn_destruct;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bindView();
+        ButterKnife.bind(this);
+        Host.get().restore();
     }
+
 
     @Override
     protected void onResume() {
         super.onResume();
-        Host.get().register(this);
-        updateUI(Host.get().alive());
+        Host.get().addRegister(this);
+        reduce(Host.get().status());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Host.get().deregister(this);
+        Host.get().removeRegister(this);
     }
 
-
-    private void updateUI(boolean started) {
-        if (started) {
-            tv_hint.setText(R.string.tv_hint_stop_service);
-            btn_action.setText(R.string.stop);
-        } else {
-            tv_hint.setText(R.string.tv_hint_start_service);
-            btn_action.setText(R.string.start);
+    @DebugLog
+    private void reduce(int status) {
+        switch (status) {
+            case Status.NONE:
+                bindToBeBorn();
+                break;
+            case Status.SLEEP:
+                bindDeactivated();
+                break;
+            case Status.ALIVE:
+                bindAliveState();
+                break;
         }
     }
 
-    private void bindView() {
-        tv_hint = findViewById(R.id.tv_hint);
-        btn_action = findViewById(R.id.btn_action);
-        btn_action.setOnClickListener(this);
+    private void bindAliveState() {
+        tv_hint.setText(R.string.tv_hint_stop_service);
+        btn_activate.setEnabled(false);
+        btn_resume.setEnabled(false);
+        btn_destruct.setEnabled(true);
+        btn_pause.setEnabled(true);
+    }
+
+    private void bindToBeBorn() {
+        tv_hint.setText(R.string.tv_hint_start_service);
+        btn_activate.setEnabled(true);
+        btn_resume.setEnabled(false);
+        btn_destruct.setEnabled(false);
+        btn_pause.setEnabled(false);
+    }
+
+    private void bindDeactivated() {
+        tv_hint.setText(R.string.tv_hint_start_service);
+        btn_activate.setEnabled(false);
+        btn_resume.setEnabled(true);
+        btn_destruct.setEnabled(false);
+        btn_pause.setEnabled(false);
     }
 
 
+    @OnClick(R.id.btn_destruct)
+    public void destruct(View v) {
+        Host.get().destruct();
+    }
+
+    @OnClick({R.id.btn_activate, R.id.btn_resume})
+    public void activate(View v) {
+        Host.get().activate();
+    }
+
+    @OnClick(R.id.btn_pause)
+    public void deactivate(View v) {
+        Host.get().sleep();
+    }
+
+    @MainThread
     @Override
-    public void onClick(View v) {
-        Host.get().toggleStatus();
+    public void onUpdate(@HostStatus int status) {
+        reduce(status);
     }
 
-    @Override
-    public void onUpdate(boolean alive) {
-        updateUI(alive);
-    }
 }

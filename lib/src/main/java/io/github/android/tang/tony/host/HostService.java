@@ -6,32 +6,44 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
+import javax.inject.Inject;
+
 import androidx.annotation.Nullable;
+import dagger.Subcomponent;
 import hugo.weaving.DebugLog;
+import io.github.android.tang.tony.host.HostStatusPersister.InternalStatus;
 
 @DebugLog
 public class HostService extends Service {
 
-    private NotificationHelper notificationHelper;
+    @Inject
+    NotificationHelper notificationHelper;
+
+    @Inject
+    HostStatusPersister sharedPreferenceHelper;
 
 
-    static Intent constructHostIntent(Context context) {
+    public static Intent constructHostIntent(Context context) {
         return new Intent(context, HostService.class);
     }
 
     @Override
     public void onCreate() {
+        inject();
         super.onCreate();
-        ServiceStatusBroadcastReceiver.broadcast(this, true);
-        notificationHelper = new NotificationHelper(this);
+        HostStatusBroadcastReceiver.broadcast(this, Status.ALIVE);
         startForegroundService();
         onBorn();
+    }
+
+    private void inject() {
+        Host.get().hostComponent().hostServiceComponentBuilder().build().inject(this);
     }
 
     private void onBorn() {
         Application application = getApplication();
         if (application instanceof IHost) {
-            ((IHost) application).onBorn();
+            ((IHost) application).onAlive();
         }
     }
 
@@ -56,14 +68,40 @@ public class HostService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        ServiceStatusBroadcastReceiver.broadcast(this, false);
+        preDestroy();
         onDeceased();
+    }
+
+    private void preDestroy() {
+        InternalStatus status = sharedPreferenceHelper.status();
+        int hostStatus = map(status);
+        HostStatusBroadcastReceiver.broadcast(this, hostStatus);
+        if (hostStatus == Status.SLEEP) {
+            notificationHelper.onHostToSleep();
+        } else {
+            notificationHelper.onHostToDestructed();
+        }
+    }
+
+    @HostStatus
+    private int map(InternalStatus status) {
+        return status == InternalStatus.NONE ? Status.NONE : Status.SLEEP;
     }
 
     private void onDeceased() {
         Application application = getApplication();
         if (application instanceof IHost) {
             ((IHost) application).onDeceased();
+        }
+    }
+
+    @Subcomponent
+    interface HostServiceComponent {
+        void inject(HostService service);
+
+        @Subcomponent.Builder
+        interface Builder {
+            HostServiceComponent build();
         }
     }
 }

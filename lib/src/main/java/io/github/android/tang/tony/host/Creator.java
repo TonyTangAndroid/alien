@@ -4,91 +4,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import javax.inject.Inject;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.JobIntentService;
+import hugo.weaving.DebugLog;
 
-import timber.log.Timber;
+@DebugLog
+public class Creator extends JobIntentService {
 
-@HostScope
-public class Creator {
+    private static final int BIRTH_ID_AS_JOB_ID = 10083;
 
-    private final Context context;
-    private final SharedPreferenceHelper sharedPreferenceHelper;
-
-    @Inject
-    public Creator(Context context, SharedPreferenceHelper sharedPreferenceHelper) {
-        this.context = context;
-        this.sharedPreferenceHelper = sharedPreferenceHelper;
-        mutate(sharedPreferenceHelper.enabled());
+    public static void kickOff(Context context, Intent work) {
+        enqueueWork(context, Creator.class, birthId(), work);
     }
 
-    public void onDeviceRebooted() {
-        if (selfReviveEnabled() && wasLiving()) {
-            revive();
-        } else {
-            Timber.d("Service has not been enabled");
-        }
+    private static int birthId() {
+        return BIRTH_ID_AS_JOB_ID;
     }
 
-    private boolean wasLiving() {
-        return sharedPreferenceHelper.enabled();
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    protected void onHandleWork(@NonNull Intent work) {
+        deliver(work);
     }
 
-    private boolean selfReviveEnabled() {
-        return true;
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void deliver(@NonNull Intent work) {
+        startForegroundService(work);
     }
 
-    public void destroy() {
-        Intent hostIntent = conceive();
-        context.stopService(hostIntent);
-    }
-
-    public void deliver() {
-        context.startService(conceive());
-    }
-
-    public void toggleStatus() {
-        boolean previousStatus = sharedPreferenceHelper.enabled();
-        boolean newStatus = !previousStatus;
-        mutate(newStatus);
-        sharedPreferenceHelper.update(newStatus);
-    }
-
-    public void mutate(boolean newStatus) {
-        if (newStatus) {
-            deliver();
-        } else {
-            destroy();
-        }
-    }
-
-    public void revive() {
-        if (selfReviveSupported()) {
-            selfRevive();
-        } else {
-            reviveThroughHandOfGod();
-        }
-    }
-
-    private void reviveThroughHandOfGod() {
-        ParturitionService.kickOff(context, conceive());
-    }
-
-    private Intent conceive() {
-        return HostService.constructHostIntent(context);
-    }
-
-    private void selfRevive() {
-        context.startService(conceive());
-    }
-
-
-    public void destruct() {
-        sharedPreferenceHelper.update(false);
-        destroy();
-    }
-
-
-    private boolean selfReviveSupported() {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.O;
-    }
 }
