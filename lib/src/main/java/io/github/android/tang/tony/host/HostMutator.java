@@ -29,17 +29,6 @@ public class HostMutator extends BroadcastReceiver {
     }
 
     private void onActionTriggered(@ActionType int action) {
-        switch (action) {
-            case Action.DEACTIVATE:
-                agent.sleep();
-                break;
-            case Action.ACTIVATE:
-                agent.activate();
-                break;
-            case Action.DESTRUCT:
-                agent.destruct();
-                break;
-        }
+        agent.mutate(action);
     }
-
 }

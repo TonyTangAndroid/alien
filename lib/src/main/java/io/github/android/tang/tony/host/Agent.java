@@ -6,7 +6,7 @@ import android.content.Intent;
 import javax.inject.Inject;
 
 @HostScope
-public class Agent {
+class Agent {
 
     private final Mother mother;
     private final Context context;
@@ -25,27 +25,54 @@ public class Agent {
     }
 
 
-    public void activate() {
-        hostStatusCache.update(HostStatusCache.InternalStatus.ACTIVATED);
-        mother.deliver();
-        HostStatusBroadcastReceiver.broadcast(context, Status.ALIVE);
+    public void mutate(@ActionType int action) {
+        switch (action) {
+            case Action.DEACTIVATE:
+                deactivate();
+                break;
+            case Action.ACTIVATE:
+                activate();
+                break;
+            case Action.DESTRUCT:
+                destruct();
+                break;
+        }
     }
 
-    public void sleep() {
-        hostStatusCache.update(HostStatusCache.InternalStatus.ON_CALL);
-        context.stopService(instance());
-        notificationHelper.showSleepStatus();
-        HostStatusBroadcastReceiver.broadcast(context, Status.SLEEP);
-    }
-
-    public void destruct() {
+    private void destruct() {
         hostStatusCache.update(HostStatusCache.InternalStatus.NONE);
         context.stopService(instance());
-        notificationHelper.cancel();
-        HostStatusBroadcastReceiver.broadcast(context, Status.NONE);
+        notify(Status.NONE);
     }
 
-    public HostStatusCache.InternalStatus status() {
+    private void activate() {
+        hostStatusCache.update(HostStatusCache.InternalStatus.ACTIVATED);
+        mother.deliver();
+        notify(Status.ACTIVATED);
+    }
+
+    private void deactivate() {
+        hostStatusCache.update(HostStatusCache.InternalStatus.DEACTIVATED);
+        context.stopService(instance());
+        notify(Status.DEACTIVATED);
+    }
+
+
+    private void notify(@HostStatus int status) {
+        switch (status) {
+            case Status.ACTIVATED:
+                break;
+            case Status.DEACTIVATED:
+                notificationHelper.showSleepStatus();
+                break;
+            case Status.NONE:
+                notificationHelper.cancel();
+                break;
+        }
+        HostStatusBroadcastReceiver.broadcast(context, status);
+    }
+
+    private HostStatusCache.InternalStatus status() {
         return hostStatusCache.status();
     }
 
@@ -55,6 +82,18 @@ public class Agent {
 
 
     public void revive() {
-        mother.deliver();
+        switch (status()) {
+            case NONE:
+                notify(Status.NONE);
+                break;
+            case DEACTIVATED:
+                notify(Status.DEACTIVATED);
+                break;
+            case ACTIVATED:
+                mother.deliver();
+                break;
+        }
     }
+
+
 }

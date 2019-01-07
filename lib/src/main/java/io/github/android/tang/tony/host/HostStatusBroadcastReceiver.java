@@ -12,9 +12,9 @@ import timber.log.Timber;
 public class HostStatusBroadcastReceiver extends BroadcastReceiver {
 
     private static final String EXTRA_STATUS = "extra_status";
-    private final HostMutationCallback callback;
+    private final HostStatusCallback callback;
 
-    public HostStatusBroadcastReceiver(HostMutationCallback callback) {
+    public HostStatusBroadcastReceiver(HostStatusCallback callback) {
         this.callback = callback;
     }
 

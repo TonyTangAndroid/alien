@@ -12,12 +12,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import hugo.weaving.DebugLog;
 import io.github.android.tang.tony.host.Host;
-import io.github.android.tang.tony.host.HostMutationCallback;
+import io.github.android.tang.tony.host.HostStatusCallback;
 import io.github.android.tang.tony.host.HostStatus;
 import io.github.android.tang.tony.host.Status;
 
 @DebugLog
-public class MainActivity extends AppCompatActivity implements HostMutationCallback {
+public class MainActivity extends AppCompatActivity implements HostStatusCallback {
 
     @BindView(R.id.tv_hint)
     TextView tv_hint;
@@ -40,14 +40,14 @@ public class MainActivity extends AppCompatActivity implements HostMutationCallb
     @Override
     protected void onResume() {
         super.onResume();
-        Host.get().addRegister(this);
+        Host.get().registerHostStatusCallback(this);
         reduce(Host.get().status());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Host.get().removeRegister(this);
+        Host.get().deregisterHostStatusCallback(this);
     }
 
     @DebugLog
@@ -56,10 +56,10 @@ public class MainActivity extends AppCompatActivity implements HostMutationCallb
             case Status.NONE:
                 toBeActivated();
                 break;
-            case Status.SLEEP:
+            case Status.DEACTIVATED:
                 toBeWakenUp();
                 break;
-            case Status.ALIVE:
+            case Status.ACTIVATED:
                 bindAliveState();
                 break;
         }

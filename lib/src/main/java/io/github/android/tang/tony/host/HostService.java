@@ -1,6 +1,5 @@
 package io.github.android.tang.tony.host;
 
-import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -27,19 +26,12 @@ public class HostService extends Service {
         inject();
         super.onCreate();
         startForegroundService();
-        onBorn();
     }
 
     private void inject() {
         Host.get().hostComponent().hostServiceComponentBuilder().build().inject(this);
     }
 
-    private void onBorn() {
-        Application application = getApplication();
-        if (application instanceof IHost) {
-            ((IHost) application).onAlive();
-        }
-    }
 
     private void startForegroundService() {
         notificationHelper.showOngoingStatus(this);
@@ -57,19 +49,6 @@ public class HostService extends Service {
     public IBinder onBind(Intent intent) {
         // We don't provide binding, so return null
         return null;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        onDeceased();
-    }
-
-    private void onDeceased() {
-        Application application = getApplication();
-        if (application instanceof IHost) {
-            ((IHost) application).onDeceased();
-        }
     }
 
     @Subcomponent

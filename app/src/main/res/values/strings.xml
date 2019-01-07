@@ -9,7 +9,7 @@
         The difference between deactivate and destruct is that the deactivate will be put the host into sleep mode,\n
         which means a sleep notification will be shown upon device reboot.
     </string>
-    <string name="tv_hint_activate_service_for_the_first_time">Host service has never been activated.</string>
+    <string name="tv_hint_activate_service_for_the_first_time">Host service is to be activated.</string>
     <string name="tv_hint_activate_service_from_sleep_mode">Host service is on sleep mode.</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>

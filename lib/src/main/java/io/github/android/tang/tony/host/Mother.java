@@ -7,7 +7,7 @@ import android.os.Build;
 import javax.inject.Inject;
 
 @HostScope
-public class Mother {
+class Mother {
 
     private final Context context;
 

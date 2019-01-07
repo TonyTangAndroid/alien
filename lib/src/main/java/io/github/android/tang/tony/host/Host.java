@@ -22,7 +22,7 @@ import io.github.android.tang.tony.host.config.NotificationConfigBuilder;
 import timber.log.Timber;
 
 @DebugLog
-public class Host implements HostMutationCallback {
+public class Host implements HostStatusCallback {
     @Inject
     Agent agent;
     @Inject
@@ -34,7 +34,8 @@ public class Host implements HostMutationCallback {
     String applicationId;
 
 
-    Set<HostMutationCallback> hostMutationCallbacks = new HashSet<>();
+    private final Set<HostStatusCallback> hostStatusCallbacks = new HashSet<>();
+    private final Set<Alien> aliens = new HashSet<>();
     private HostComponent hostComponent;
     @HostStatus
     private int status;
@@ -61,10 +62,34 @@ public class Host implements HostMutationCallback {
         get().initialize(config);
     }
 
-    public void addRegister(HostMutationCallback callback) {
-        if (!hostMutationCallbacks.add(callback)) {
+    public void registerHostStatusCallback(HostStatusCallback callback) {
+        if (!hostStatusCallbacks.add(callback)) {
             Timber.w("Callback has already been registered.");
         }
+    }
+
+    public void activateAlien(Alien alien) {
+        if (!aliens.add(alien)) {
+            Timber.w("Alien has already been registered.");
+        }
+        if (status() != Status.ACTIVATED) {
+            activate();
+        } else {
+            alien.onStatusUpdate(true);
+        }
+    }
+
+
+    public void deactivateAlien(Alien alien) {
+        if (!aliens.remove(alien)) {
+            Timber.w("Alien has never been registered.");
+        } else {
+            alien.onStatusUpdate(false);
+            if (aliens.size() == 0) {
+                destruct();
+            }
+        }
+
     }
 
     private void register() {
@@ -73,13 +98,13 @@ public class Host implements HostMutationCallback {
         LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter);
     }
 
-    public void removeRegister(HostMutationCallback callback) {
-        if (!hostMutationCallbacks.remove(callback)) {
+    public void deregisterHostStatusCallback(HostStatusCallback callback) {
+        if (!hostStatusCallbacks.remove(callback)) {
             Timber.w("Callback has not been registered.");
         }
     }
 
-    public HostComponent hostComponent() {
+    HostComponent hostComponent() {
         return hostComponent;
     }
 
@@ -87,16 +112,20 @@ public class Host implements HostMutationCallback {
     @Override
     public void onMutate(@HostStatus int newStatus) {
         this.status = newStatus;
-        for (HostMutationCallback callback : hostMutationCallbacks) {
+        for (HostStatusCallback callback : hostStatusCallbacks) {
             callback.onMutate(newStatus);
         }
+        boolean alive = status() == Status.ACTIVATED;
+        for (Alien alien : aliens) {
+            alien.onStatusUpdate(alive);
+        }
     }
+
 
     private void initialize(Config config) {
         hostComponent = DaggerHostComponent.builder().config(config).build();
         hostComponent.inject(this);
         register();
-
     }
 
     public void activate() {
@@ -119,67 +148,26 @@ public class Host implements HostMutationCallback {
     public void restore() {
         Timber.d("Attempting to restore host.");
         if (alive()) {
-            Timber.v("Host has already become alive.");
+            Timber.v("Host has already been activated.");
         } else {
-            restore(agent.status());
+            agent.revive();
         }
-
     }
 
     public void revive() {
         Timber.d("Attempting to revive host.");
         if (enabled()) {
-            revive(agent.status());
+            agent.revive();
         } else {
             Timber.d("Revive is not enabled.");
         }
     }
 
-    private void revive(HostStatusCache.InternalStatus status) {
-        switch (status) {
-            case NONE:
-                toBeActivated();
-                break;
-            case ON_CALL:
-                toBeWakenUp();
-                break;
-            case ACTIVATED:
-                reviveThroughAgent();
-                break;
-        }
-    }
 
     private boolean alive() {
-        return status() == Status.ALIVE;
+        return status() == Status.ACTIVATED;
     }
 
-    private void restore(HostStatusCache.InternalStatus status) {
-        switch (status) {
-            case NONE:
-                toBeActivated();
-                break;
-            case ON_CALL:
-                toBeWakenUp();
-                break;
-            case ACTIVATED:
-                reviveThroughAgent();
-                break;
-        }
-    }
-
-    private void reviveThroughAgent() {
-        agent.revive();
-    }
-
-    private void toBeWakenUp() {
-        onMutate(Status.SLEEP);
-        Timber.d("Host had been manually put into sleep. Hence it requires to be waken up manually to become alive.");
-    }
-
-    private void toBeActivated() {
-        onMutate(Status.NONE);
-        Timber.d("Host has not been born yet. It requires to be activated to become alive.");
-    }
 
     private boolean enabled() {
         return !config.disableRevive();

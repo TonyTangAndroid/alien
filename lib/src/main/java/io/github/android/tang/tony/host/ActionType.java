@@ -8,5 +8,5 @@ import androidx.annotation.IntDef;
 
 @IntDef({Action.DESTRUCT, Action.DEACTIVATE, Action.ACTIVATE})
 @Retention(RetentionPolicy.SOURCE)
-public @interface ActionType {
+@interface ActionType {
 }

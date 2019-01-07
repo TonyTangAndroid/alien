@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">BeaconServiceDemo</string>
+    <string name="beacon_being_scanned">Beacon is being scanned.</string>
+    <string name="beacon_not_being_scanned">Beacon is not being scanned.</string>
+    <string name="scan">Scan</string>
+    <string name="stop">Stop</string>
+</resources>

@@ -8,7 +8,7 @@ import hugo.weaving.DebugLog;
 
 @HostScope
 @DebugLog
-public class HostStatusCache {
+class HostStatusCache {
 
     public static String PREF_KEY_ENABLED = "pref_key_host_status";
 
@@ -22,8 +22,7 @@ public class HostStatusCache {
     public InternalStatus status() {
         if (prefs.contains(PREF_KEY_ENABLED)) {
             return prefs.getBoolean(PREF_KEY_ENABLED, false)
-                    ? InternalStatus.ACTIVATED
-                    : InternalStatus.ON_CALL;
+                    ? InternalStatus.ACTIVATED : InternalStatus.DEACTIVATED;
         } else {
             return InternalStatus.NONE;
         }
@@ -34,7 +33,7 @@ public class HostStatusCache {
             case NONE:
                 prefs.edit().remove(PREF_KEY_ENABLED).apply();
                 break;
-            case ON_CALL:
+            case DEACTIVATED:
                 prefs.edit().putBoolean(PREF_KEY_ENABLED, false).apply();
                 break;
             case ACTIVATED:
@@ -44,7 +43,7 @@ public class HostStatusCache {
 
     enum InternalStatus {
         NONE,
-        ON_CALL,
+        DEACTIVATED,
         ACTIVATED
     }
 }

@@ -1,9 +1,10 @@
-package io.github.android.tang.tony.host.demo;
+package io.github.android.tang.tony.beacon.demo;
 
 import android.app.Application;
 
 import hugo.weaving.DebugLog;
 import io.github.android.tang.tony.file.logger.FileLogger;
+import io.github.android.tang.tony.host.Alien;
 import io.github.android.tang.tony.host.Host;
 import io.github.android.tang.tony.host.config.Config;
 import io.github.android.tang.tony.host.config.NotificationConfig;
@@ -12,11 +13,15 @@ import io.github.android.tang.tony.host.config.NotificationConfigBuilder;
 @DebugLog
 public class App extends Application {
 
+
+    private Alien beaconAlien;
+
     @Override
     public void onCreate() {
         super.onCreate();
         FileLogger.init(this);
         Host.init(config());
+        beaconAlien = new BeaconAlien(this);
     }
 
     private Config config() {
@@ -24,4 +29,9 @@ public class App extends Application {
         return Config.builder().notificationConfig(notificationConfig)
                 .application(this).build();
     }
+
+    public Alien beaconAlien() {
+        return beaconAlien;
+    }
+
 }

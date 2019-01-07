@@ -35,7 +35,7 @@ public abstract class Config {
          *                      until it is activated manually.
          *                      <p>
          *                      No matter what's the config of {@link #disableRevive(boolean)}
-         *                      If you have manually put the host into {@link Status#SLEEP},
+         *                      If you have manually put the host into {@link Status#DEACTIVATED},
          *                      it will be under such state until you manually wake it up.
          * @return the builder.
          */
