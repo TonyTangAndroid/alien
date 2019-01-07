@@ -4,12 +4,14 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import androidx.annotation.MainThread;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -20,14 +22,19 @@ import io.github.android.tang.tony.host.config.NotificationConfigBuilder;
 import timber.log.Timber;
 
 @DebugLog
-public class Host implements HostStatusCallback {
+public class Host implements HostMutationCallback {
     @Inject
     Agent agent;
     @Inject
     Config config;
     @Inject
     Context context;
-    Set<HostStatusCallback> map = new HashSet<>();
+    @Inject
+    @Named("application_id")
+    String applicationId;
+
+
+    Set<HostMutationCallback> hostMutationCallbacks = new HashSet<>();
     private HostComponent hostComponent;
     @HostStatus
     private int status;
@@ -54,20 +61,20 @@ public class Host implements HostStatusCallback {
         get().initialize(config);
     }
 
-    public void addRegister(HostStatusCallback callback) {
-        if (!map.add(callback)) {
+    public void addRegister(HostMutationCallback callback) {
+        if (!hostMutationCallbacks.add(callback)) {
             Timber.w("Callback has already been registered.");
         }
     }
 
     private void register() {
-        IntentFilter filter = new IntentFilter(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
+        IntentFilter filter = new IntentFilter(BuildConfig.ACTION_MUTATE_HOST);
         BroadcastReceiver receiver = new HostStatusBroadcastReceiver(this);
         LocalBroadcastManager.getInstance(context).registerReceiver(receiver, filter);
     }
 
-    public void removeRegister(HostStatusCallback callback) {
-        if (!map.remove(callback)) {
+    public void removeRegister(HostMutationCallback callback) {
+        if (!hostMutationCallbacks.remove(callback)) {
             Timber.w("Callback has not been registered.");
         }
     }
@@ -78,10 +85,10 @@ public class Host implements HostStatusCallback {
 
     @MainThread
     @Override
-    public void onUpdate(@HostStatus int status) {
-        this.status = status;
-        for (HostStatusCallback callback : map) {
-            callback.onUpdate(status);
+    public void onMutate(@HostStatus int newStatus) {
+        this.status = newStatus;
+        for (HostMutationCallback callback : hostMutationCallbacks) {
+            callback.onMutate(newStatus);
         }
     }
 
@@ -93,15 +100,20 @@ public class Host implements HostStatusCallback {
     }
 
     public void activate() {
-        agent.activate();
+        broadcast(Action.ACTIVATE);
     }
 
-    public void sleep() {
-        agent.sleep();
+    private void broadcast(int activate) {
+        Intent intent = HostMutator.constructIntent(applicationId, activate);
+        context.sendBroadcast(intent);
+    }
+
+    public void deactivate() {
+        broadcast(Action.DEACTIVATE);
     }
 
     public void destruct() {
-        agent.destruct();
+        broadcast(Action.DESTRUCT);
     }
 
     public void restore() {
@@ -123,7 +135,7 @@ public class Host implements HostStatusCallback {
         }
     }
 
-    private void revive(HostStatusPersister.InternalStatus status) {
+    private void revive(HostStatusCache.InternalStatus status) {
         switch (status) {
             case NONE:
                 toBeActivated();
@@ -141,7 +153,7 @@ public class Host implements HostStatusCallback {
         return status() == Status.ALIVE;
     }
 
-    private void restore(HostStatusPersister.InternalStatus status) {
+    private void restore(HostStatusCache.InternalStatus status) {
         switch (status) {
             case NONE:
                 toBeActivated();
@@ -160,13 +172,13 @@ public class Host implements HostStatusCallback {
     }
 
     private void toBeWakenUp() {
-        HostStatusBroadcastReceiver.broadcast(context, Status.SLEEP);
+        onMutate(Status.SLEEP);
         Timber.d("Host had been manually put into sleep. Hence it requires to be waken up manually to become alive.");
     }
 
     private void toBeActivated() {
+        onMutate(Status.NONE);
         Timber.d("Host has not been born yet. It requires to be activated to become alive.");
-        HostStatusBroadcastReceiver.broadcast(context, Status.NONE);
     }
 
     private boolean enabled() {

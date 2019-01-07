@@ -12,21 +12,19 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import hugo.weaving.DebugLog;
 import io.github.android.tang.tony.host.Host;
+import io.github.android.tang.tony.host.HostMutationCallback;
 import io.github.android.tang.tony.host.HostStatus;
-import io.github.android.tang.tony.host.HostStatusCallback;
 import io.github.android.tang.tony.host.Status;
 
 @DebugLog
-public class MainActivity extends AppCompatActivity implements HostStatusCallback {
+public class MainActivity extends AppCompatActivity implements HostMutationCallback {
 
     @BindView(R.id.tv_hint)
     TextView tv_hint;
     @BindView(R.id.btn_activate)
     Button btn_activate;
-    @BindView(R.id.btn_pause)
-    Button btn_pause;
-    @BindView(R.id.btn_resume)
-    Button btn_resume;
+    @BindView(R.id.btn_deactivate)
+    Button btn_deactivate;
     @BindView(R.id.btn_destruct)
     Button btn_destruct;
 
@@ -56,10 +54,10 @@ public class MainActivity extends AppCompatActivity implements HostStatusCallbac
     private void reduce(int status) {
         switch (status) {
             case Status.NONE:
-                bindToBeBorn();
+                toBeActivated();
                 break;
             case Status.SLEEP:
-                bindDeactivated();
+                toBeWakenUp();
                 break;
             case Status.ALIVE:
                 bindAliveState();
@@ -70,25 +68,22 @@ public class MainActivity extends AppCompatActivity implements HostStatusCallbac
     private void bindAliveState() {
         tv_hint.setText(R.string.tv_hint_stop_service);
         btn_activate.setEnabled(false);
-        btn_resume.setEnabled(false);
         btn_destruct.setEnabled(true);
-        btn_pause.setEnabled(true);
+        btn_deactivate.setEnabled(true);
     }
 
-    private void bindToBeBorn() {
-        tv_hint.setText(R.string.tv_hint_start_service);
+    private void toBeActivated() {
+        tv_hint.setText(R.string.tv_hint_activate_service_for_the_first_time);
         btn_activate.setEnabled(true);
-        btn_resume.setEnabled(false);
         btn_destruct.setEnabled(false);
-        btn_pause.setEnabled(false);
+        btn_deactivate.setEnabled(false);
     }
 
-    private void bindDeactivated() {
-        tv_hint.setText(R.string.tv_hint_start_service);
-        btn_activate.setEnabled(false);
-        btn_resume.setEnabled(true);
-        btn_destruct.setEnabled(false);
-        btn_pause.setEnabled(false);
+    private void toBeWakenUp() {
+        tv_hint.setText(R.string.tv_hint_activate_service_from_sleep_mode);
+        btn_activate.setEnabled(true);
+        btn_destruct.setEnabled(true);
+        btn_deactivate.setEnabled(false);
     }
 
 
@@ -97,20 +92,20 @@ public class MainActivity extends AppCompatActivity implements HostStatusCallbac
         Host.get().destruct();
     }
 
-    @OnClick({R.id.btn_activate, R.id.btn_resume})
+    @OnClick({R.id.btn_activate})
     public void activate(View v) {
         Host.get().activate();
     }
 
-    @OnClick(R.id.btn_pause)
+    @OnClick(R.id.btn_deactivate)
     public void deactivate(View v) {
-        Host.get().sleep();
+        Host.get().deactivate();
     }
 
     @MainThread
     @Override
-    public void onUpdate(@HostStatus int status) {
-        reduce(status);
+    public void onMutate(@HostStatus int newStatus) {
+        reduce(newStatus);
     }
 
 }

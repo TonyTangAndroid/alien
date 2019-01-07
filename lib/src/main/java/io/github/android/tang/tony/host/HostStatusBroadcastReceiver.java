@@ -12,20 +12,20 @@ import timber.log.Timber;
 public class HostStatusBroadcastReceiver extends BroadcastReceiver {
 
     private static final String EXTRA_STATUS = "extra_status";
-    private final HostStatusCallback callback;
+    private final HostMutationCallback callback;
 
-    public HostStatusBroadcastReceiver(HostStatusCallback callback) {
+    public HostStatusBroadcastReceiver(HostMutationCallback callback) {
         this.callback = callback;
     }
 
     static void broadcast(Context context, @HostStatus int status) {
-        Intent intent = new Intent(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE).putExtra(EXTRA_STATUS, status);
+        Intent intent = new Intent(BuildConfig.ACTION_MUTATE_HOST).putExtra(EXTRA_STATUS, status);
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     private void onStatusUpdated(@HostStatus int status) {
         log(status);
-        callback.onUpdate(status);
+        callback.onMutate(status);
     }
 
     private void log(@HostStatus int status) {

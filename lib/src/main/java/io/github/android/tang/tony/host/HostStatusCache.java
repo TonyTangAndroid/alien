@@ -8,14 +8,14 @@ import hugo.weaving.DebugLog;
 
 @HostScope
 @DebugLog
-public class HostStatusPersister {
+public class HostStatusCache {
 
     public static String PREF_KEY_ENABLED = "pref_key_host_status";
 
     private final SharedPreferences prefs;
 
     @Inject
-    public HostStatusPersister(SharedPreferences sharedPreferences) {
+    public HostStatusCache(SharedPreferences sharedPreferences) {
         this.prefs = sharedPreferences;
     }
 

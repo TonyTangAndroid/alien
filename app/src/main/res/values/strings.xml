@@ -3,19 +3,19 @@
     <string name="channel_name">Foreground Service Channel</string>
     <string name="channel_description">This channel is to indicate whether the foreground service is running or not.</string>
     <string name="foreground_service_is_running">Foreground Service is running</string>
-    <string name="tv_hint_stop_service">Host service is activated. Press Pause or Destruct to update its status.\n
-        If You destruct the host, it will NOT reactivate its status until you activate it again manually.\n
-        If You pause the host, it will reactivate its status based on your configuration.</string>
-    <string name="tv_hint_start_service">Host service is not alive Press the Activate or Resume button to start.\n
-        If you have never activated the Host service or the host service has been destroyed by you manually, you need activate it first.\n
-        If you have deactivated the Host service, you could activate it or destruct it. After its destruction, everything will be reset.
-        </string>
+    <string name="tv_hint_stop_service">Host service is activated. Press Deactivate or Destruct to mutate its status.\n
+        If You deactivate the host, it will be put into sleep mode until you manually activate it again.\n
+        If You destruct the host, it will be totally destroyed and you have to manually activate it again.\n
+        The difference between deactivate and destruct is that the deactivate will be put the host into sleep mode,\n
+        which means a sleep notification will be shown upon device reboot.
+    </string>
+    <string name="tv_hint_activate_service_for_the_first_time">Host service has never been activated.</string>
+    <string name="tv_hint_activate_service_from_sleep_mode">Host service is on sleep mode.</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
     <string name="destruct">Destruct</string>
     <string name="activate">Activate</string>
-    <string name="pause">Pause</string>
-    <string name="resume">Resume</string>
+    <string name="deactivate">Deactivate</string>
     <string name="on_deceased_log">Oh, no, our host is killing us. But no worry, let us keep fingers crossed that ourhost will resurrect on device reboot.</string>
     <string name="on_alive_log">Let\'s do something awesome without worrying about being killed brutally by Android System.</string>
 </resources>

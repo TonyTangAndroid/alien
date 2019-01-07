@@ -10,34 +10,43 @@ public class Agent {
 
     private final Mother mother;
     private final Context context;
-    private final HostStatusPersister sharedPreferenceHelper;
+    private final HostStatusCache hostStatusCache;
+    private final NotificationHelper notificationHelper;
 
     @Inject
-    public Agent(Mother mother, Context context, HostStatusPersister sharedPreferenceHelper) {
+    public Agent(Mother mother,
+                 Context context,
+                 HostStatusCache hostStatusCache,
+                 NotificationHelper notificationHelper) {
         this.mother = mother;
         this.context = context;
-        this.sharedPreferenceHelper = sharedPreferenceHelper;
+        this.hostStatusCache = hostStatusCache;
+        this.notificationHelper = notificationHelper;
     }
 
 
     public void activate() {
-        sharedPreferenceHelper.update(HostStatusPersister.InternalStatus.ACTIVATED);
+        hostStatusCache.update(HostStatusCache.InternalStatus.ACTIVATED);
         mother.deliver();
+        HostStatusBroadcastReceiver.broadcast(context, Status.ALIVE);
     }
 
     public void sleep() {
-        sharedPreferenceHelper.update(HostStatusPersister.InternalStatus.ON_CALL);
+        hostStatusCache.update(HostStatusCache.InternalStatus.ON_CALL);
         context.stopService(instance());
+        notificationHelper.showSleepStatus();
+        HostStatusBroadcastReceiver.broadcast(context, Status.SLEEP);
     }
 
     public void destruct() {
-        sharedPreferenceHelper.update(HostStatusPersister.InternalStatus.NONE);
+        hostStatusCache.update(HostStatusCache.InternalStatus.NONE);
         context.stopService(instance());
-
+        notificationHelper.cancel();
+        HostStatusBroadcastReceiver.broadcast(context, Status.NONE);
     }
 
-    public HostStatusPersister.InternalStatus status() {
-        return sharedPreferenceHelper.status();
+    public HostStatusCache.InternalStatus status() {
+        return hostStatusCache.status();
     }
 
     private Intent instance() {

@@ -1,10 +1,10 @@
 <resources>
     <string name="channel_name">Host Foreground Service Channel</string>
     <string name="channel_description">This channel is to indicate whether the host foreground service is running or not.</string>
+    <string name="destruct">Destruct</string>
+    <string name="deactivate">Deactivate</string>
+    <string name="activate">Activate</string>
     <string name="host_alive">The host is alive.</string>
-    <string name="start">Start</string>
-    <string name="stop">Stop</string>
-    <string name="pause">Pause</string>
-    <string name="resume">Resume</string>
     <string name="host_sleep">The host is sleeping.</string>
+
 </resources>

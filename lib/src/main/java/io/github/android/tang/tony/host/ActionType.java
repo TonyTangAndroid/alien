@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import androidx.annotation.IntDef;
 
-@IntDef({Action.STOP, Action.PAUSE, Action.RESUME})
+@IntDef({Action.DESTRUCT, Action.DEACTIVATE, Action.ACTIVATE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface ActionType {
 }

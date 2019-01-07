@@ -28,22 +28,22 @@ public abstract class NotificationConfigBuilder {
                 .title(defaultAppName(context))
                 .body(context.getString(R.string.host_alive))
                 .smallIcon(defaultIcon(context))
-                .stop(stop(context))
-                .pause(pause(context))
-                .resume(resume(context))
+                .destruct(stop(context))
+                .deactivate(pause(context))
+                .activate(resume(context))
                 .build();
     }
 
     private static NotificationConfig.ActionConfig stop(Context context) {
         return NotificationConfig.ActionConfig.builder()
-                .actionTitle(context.getString(R.string.stop))
+                .title(context.getString(R.string.destruct))
                 .drawableId(R.drawable.ic_stop_black_24dp)
                 .build();
     }
 
     private static NotificationConfig.ActionConfig pause(Context context) {
         return NotificationConfig.ActionConfig.builder()
-                .actionTitle(context.getString(R.string.pause))
+                .title(context.getString(R.string.deactivate))
                 .body(context.getString(R.string.host_sleep))
                 .drawableId(R.drawable.ic_pause_black_24dp)
                 .build();
@@ -51,7 +51,7 @@ public abstract class NotificationConfigBuilder {
 
     private static NotificationConfig.ActionConfig resume(Context context) {
         return NotificationConfig.ActionConfig.builder()
-                .actionTitle(context.getString(R.string.resume))
+                .title(context.getString(R.string.activate))
                 .body(context.getString(R.string.host_sleep))
                 .drawableId(R.drawable.ic_resume_black_24dp)
                 .build();
@@ -98,8 +98,8 @@ public abstract class NotificationConfigBuilder {
     }
 
     public static NotificationConfig.Channel defaultChannel(Context context) {
-        return NotificationConfig.Channel.builder().channelId("android_foreground_service_host")
-                .channelName(context.getString(R.string.channel_name))
+        return NotificationConfig.Channel.builder().id("android_foreground_service_host")
+                .name(context.getString(R.string.channel_name))
                 .importance(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? NotificationManager.IMPORTANCE_DEFAULT : 0)
                 .build();
     }

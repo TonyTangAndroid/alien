@@ -18,7 +18,7 @@ interface HostComponent {
 
     HostService.HostServiceComponent.Builder hostServiceComponentBuilder();
 
-    void inject(ServiceAbortionActionBroadcastReceiver broadcastReceiver);
+    void inject(HostMutator broadcastReceiver);
 
     @Component.Builder
     interface Builder {

@@ -9,16 +9,14 @@ import javax.inject.Inject;
 import hugo.weaving.DebugLog;
 
 @DebugLog
-public class ServiceAbortionActionBroadcastReceiver extends BroadcastReceiver {
+public class HostMutator extends BroadcastReceiver {
 
     private static final String EXTRA_ACTION_TYPE = "extra_action_type";
     @Inject
     Agent agent;
-    @Inject
-    HostStatusPersister sharedPreferenceHelper;
 
     public static Intent constructIntent(String applicationId, @ActionType int action) {
-        Intent intent = new Intent(BuildConfig.ACTION_STOP_FOREGROUND_SERVICE);
+        Intent intent = new Intent(BuildConfig.ACTION_MUTATE_HOST);
         intent.putExtra(EXTRA_ACTION_TYPE, action);
         intent.setPackage(applicationId);//Must be set to support Android Oreo.
         return intent;
@@ -27,18 +25,18 @@ public class ServiceAbortionActionBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Host.get().hostComponent().inject(this);
-        onActionTriggered(intent.getIntExtra(EXTRA_ACTION_TYPE, Action.STOP));
+        onActionTriggered(intent.getIntExtra(EXTRA_ACTION_TYPE, Action.DESTRUCT));
     }
 
     private void onActionTriggered(@ActionType int action) {
         switch (action) {
-            case Action.PAUSE:
+            case Action.DEACTIVATE:
                 agent.sleep();
                 break;
-            case Action.RESUME:
+            case Action.ACTIVATE:
                 agent.activate();
                 break;
-            case Action.STOP:
+            case Action.DESTRUCT:
                 agent.destruct();
                 break;
         }

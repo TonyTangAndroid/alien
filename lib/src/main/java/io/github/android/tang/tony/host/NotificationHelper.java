@@ -49,26 +49,26 @@ class NotificationHelper {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private NotificationChannel channel(NotificationConfig.Channel config) {
-        return new NotificationChannel(config.channelId(), config.channelName(), config.importance());
+        return new NotificationChannel(config.id(), config.name(), config.importance());
     }
 
     private NotificationCompat.Builder buildOngoingNotification() {
 
         String title = notificationConfig.ui().title();
         String body = notificationConfig.ui().body();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, notificationConfig.channel().channelId())
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, notificationConfig.channel().id())
                 .setContentTitle(title)
                 .setContentText(body)
                 .setContentIntent(launchPendingIntent())
                 .setSmallIcon(notificationConfig.ui().smallIcon())
                 .setAutoCancel(true);
 
-        ActionConfig stop = notificationConfig.ui().stop();
-        builder.addAction(action(stop, Action.STOP));
+        ActionConfig stop = notificationConfig.ui().destruct();
+        builder.addAction(action(stop, Action.DESTRUCT));
 
-        ActionConfig pause = notificationConfig.ui().pause();
+        ActionConfig pause = notificationConfig.ui().deactivate();
         if (pause != null) {
-            builder.addAction(action(pause, Action.PAUSE));
+            builder.addAction(action(pause, Action.DEACTIVATE));
         }
         return builder;
     }
@@ -77,24 +77,24 @@ class NotificationHelper {
 
         String title = notificationConfig.ui().title();
         String body = resume.body();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, notificationConfig.channel().channelId())
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, notificationConfig.channel().id())
                 .setContentTitle(title)
                 .setContentText(body)
                 .setContentIntent(launchPendingIntent())
                 .setSmallIcon(notificationConfig.ui().smallIcon());
 
-        builder.addAction(action(notificationConfig.ui().stop(), Action.STOP));
-        builder.addAction(action(resume, Action.RESUME));
+        builder.addAction(action(notificationConfig.ui().destruct(), Action.DESTRUCT));
+        builder.addAction(action(resume, Action.ACTIVATE));
         return builder;
     }
 
     private NotificationCompat.Action action(ActionConfig config, @ActionType int action) {
         PendingIntent intent = actionIntent(action);
-        return new NotificationCompat.Action(config.drawableId(), config.actionTitle(), intent);
+        return new NotificationCompat.Action(config.drawableId(), config.title(), intent);
     }
 
     private PendingIntent actionIntent(@ActionType int action) {
-        Intent intent = ServiceAbortionActionBroadcastReceiver.constructIntent(applicationId, action);
+        Intent intent = HostMutator.constructIntent(applicationId, action);
         return PendingIntent.getBroadcast(context, action, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -107,24 +107,24 @@ class NotificationHelper {
         return notificationManager;
     }
 
-    public void bindAsForegroundService(Service service) {
+    public void showOngoingStatus(Service service) {
         Notification notification = buildOngoingNotification().build();
-        service.startForeground(notificationConfig.channel().channelId().hashCode(), notification);
+        service.startForeground(notificationConfig.channel().id().hashCode(), notification);
     }
 
 
-    public void onHostToSleep() {
-        ActionConfig resume = notificationConfig.ui().resume();
+    public void showSleepStatus() {
+        ActionConfig resume = notificationConfig.ui().activate();
         if (resume != null) {
             Notification notification = buildOnPausedNotification(resume).build();
-            notificationManager.notify(notificationConfig.channel().channelId().hashCode(), notification);
+            notificationManager.notify(notificationConfig.channel().id().hashCode(), notification);
         } else {
             Timber.e("Inconsistent notification status");
         }
     }
 
-    public void onHostToDestructed() {
-        notificationManager.cancel(notificationConfig.channel().channelId().hashCode());
+    public void cancel() {
+        notificationManager.cancel(notificationConfig.channel().id().hashCode());
     }
 
 }

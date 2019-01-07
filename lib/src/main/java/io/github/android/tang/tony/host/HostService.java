@@ -11,17 +11,12 @@ import javax.inject.Inject;
 import androidx.annotation.Nullable;
 import dagger.Subcomponent;
 import hugo.weaving.DebugLog;
-import io.github.android.tang.tony.host.HostStatusPersister.InternalStatus;
 
 @DebugLog
 public class HostService extends Service {
 
     @Inject
     NotificationHelper notificationHelper;
-
-    @Inject
-    HostStatusPersister sharedPreferenceHelper;
-
 
     public static Intent constructHostIntent(Context context) {
         return new Intent(context, HostService.class);
@@ -31,7 +26,6 @@ public class HostService extends Service {
     public void onCreate() {
         inject();
         super.onCreate();
-        HostStatusBroadcastReceiver.broadcast(this, Status.ALIVE);
         startForegroundService();
         onBorn();
     }
@@ -48,7 +42,7 @@ public class HostService extends Service {
     }
 
     private void startForegroundService() {
-        notificationHelper.bindAsForegroundService(this);
+        notificationHelper.showOngoingStatus(this);
     }
 
     @DebugLog
@@ -68,24 +62,7 @@ public class HostService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        preDestroy();
         onDeceased();
-    }
-
-    private void preDestroy() {
-        InternalStatus status = sharedPreferenceHelper.status();
-        int hostStatus = map(status);
-        HostStatusBroadcastReceiver.broadcast(this, hostStatus);
-        if (hostStatus == Status.SLEEP) {
-            notificationHelper.onHostToSleep();
-        } else {
-            notificationHelper.onHostToDestructed();
-        }
-    }
-
-    @HostStatus
-    private int map(InternalStatus status) {
-        return status == InternalStatus.NONE ? Status.NONE : Status.SLEEP;
     }
 
     private void onDeceased() {

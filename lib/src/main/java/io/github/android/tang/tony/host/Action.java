@@ -1,7 +1,7 @@
 package io.github.android.tang.tony.host;
 
 public interface Action {
-    int STOP = 0;
-    int PAUSE = 1;
-    int RESUME = 2;
+    int DESTRUCT = 0;
+    int DEACTIVATE = 1;
+    int ACTIVATE = 2;
 }

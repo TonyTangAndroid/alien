@@ -22,10 +22,10 @@
         </receiver>
 
         <receiver
-            android:name="io.github.android.tang.tony.host.ServiceAbortionActionBroadcastReceiver"
+            android:name="io.github.android.tang.tony.host.HostMutator"
             android:exported="false">
             <intent-filter>
-                <action android:name="${action_stop_foreground_service}" />
+                <action android:name="${action_mutate_host}" />
             </intent-filter>
         </receiver>
 

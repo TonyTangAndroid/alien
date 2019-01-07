@@ -46,13 +46,13 @@ public abstract class NotificationConfig {
         @DrawableRes
         public abstract int smallIcon();
 
-        public abstract ActionConfig stop();
+        public abstract ActionConfig destruct();
 
         @Nullable
-        public abstract ActionConfig pause();
+        public abstract ActionConfig deactivate();
 
         @Nullable
-        public abstract ActionConfig resume();
+        public abstract ActionConfig activate();
 
 
         @AutoValue.Builder
@@ -63,11 +63,11 @@ public abstract class NotificationConfig {
 
             public abstract Builder smallIcon(@DrawableRes int smallIcon);
 
-            public abstract Builder stop(ActionConfig stop);
+            public abstract Builder destruct(ActionConfig destruct);
 
-            public abstract Builder pause(ActionConfig pause);
+            public abstract Builder deactivate(ActionConfig deactivate);
 
-            public abstract Builder resume(ActionConfig resume);
+            public abstract Builder activate(ActionConfig activate);
 
             public abstract UI build();
 
@@ -82,17 +82,17 @@ public abstract class NotificationConfig {
             return new AutoValue_NotificationConfig_Channel.Builder();
         }
 
-        public abstract String channelId();
+        public abstract String id();
 
-        public abstract String channelName();
+        public abstract String name();
 
         public abstract int importance();
 
         @AutoValue.Builder
         public abstract static class Builder {
-            public abstract Builder channelId(String channelId);
+            public abstract Builder id(String id);
 
-            public abstract Builder channelName(String channelName);
+            public abstract Builder name(String name);
 
             public abstract Builder importance(int importance);
 
@@ -110,7 +110,7 @@ public abstract class NotificationConfig {
         @DrawableRes
         public abstract int drawableId();
 
-        public abstract String actionTitle();
+        public abstract String title();
 
         @Nullable
         public abstract String body();
@@ -119,7 +119,7 @@ public abstract class NotificationConfig {
         public abstract static class Builder {
             public abstract Builder drawableId(int drawableId);
 
-            public abstract Builder actionTitle(String actionTitle);
+            public abstract Builder title(String title);
 
             public abstract Builder body(String body);
 
