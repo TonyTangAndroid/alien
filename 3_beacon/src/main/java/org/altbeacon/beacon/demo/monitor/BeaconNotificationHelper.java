@@ -44,6 +44,7 @@ class BeaconNotificationHelper {
         return new NotificationCompat.Builder(context, BEACON_MESSAGE_CHANNEL_ID)
                 .setContentTitle(context.getString(R.string.beacon_detected))
                 .setContentText(beaconUuid)
+                .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentIntent(launchPendingIntent());
     }
