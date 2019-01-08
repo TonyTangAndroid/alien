@@ -1,3 +1,4 @@
 include ':lib'
 include ':1_host'
 include ':2_alien'
+include ':3_beacon'
