@@ -1,30 +1,20 @@
-apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
 apply plugin: 'com.jakewharton.hugo'
 
-ext {
-    action_mutate_host = 'ACTION_MUTATE_HOST'
-}
 android {
     compileSdkVersion 28
     defaultConfig {
+        applicationId "io.github.android.tang.tony.host.demo"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField 'String', 'ACTION_MUTATE_HOST', "\"" + "${action_mutate_host}" + "\""
-        manifestPlaceholders.action_mutate_host = "${action_mutate_host}"
-
-
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-
-        debug {
-            defaultPublishConfig "debug"
         }
     }
 
@@ -32,17 +22,23 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+
 }
 
 dependencies {
-    implementation 'androidx.core:core:1.0.1'
-    implementation 'com.jakewharton.timber:timber:4.7.1'
-    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'com.github.TonyTangAndroid:FileLogger:1.0.2'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
+    //noinspection GradleDependency
+    implementation 'com.jakewharton:butterknife:9.0.0-rc3'
+    //noinspection GradleDependency
+    annotationProcessor 'com.jakewharton:butterknife-compiler:9.0.0-rc3'
+
 
     implementation "com.google.auto.value:auto-value-annotations:1.6.2"
     annotationProcessor "com.google.auto.value:auto-value:1.6.2"
 
-    implementation 'com.google.dagger:dagger:2.20'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.20'
 
+    implementation project(':lib')
 }

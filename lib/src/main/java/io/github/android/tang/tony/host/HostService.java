@@ -5,37 +5,36 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 
+import javax.inject.Inject;
+
 import androidx.annotation.Nullable;
+import dagger.Subcomponent;
 import hugo.weaving.DebugLog;
 
 @DebugLog
 public class HostService extends Service {
 
-    private NotificationHelper notificationHelper;
+    @Inject
+    NotificationHelper notificationHelper;
 
-
-    public static void startDemoServiceOnForeground(Context context) {
-        context.startService(constructDemoService(context));
-    }
-
-    public static void stopDemoService(Context context) {
-        context.stopService(constructDemoService(context));
-    }
-
-    public static Intent constructDemoService(Context context) {
+    public static Intent constructHostIntent(Context context) {
         return new Intent(context, HostService.class);
     }
 
     @Override
     public void onCreate() {
+        inject();
         super.onCreate();
-        ServiceStatusBroadcastReceiver.broadcast(this, true);
-        notificationHelper = new NotificationHelper(this);
         startForegroundService();
     }
 
+    private void inject() {
+        Host.get().hostComponent().hostServiceComponentBuilder().build().inject(this);
+    }
+
+
     private void startForegroundService() {
-        notificationHelper.bindAsForegroundService(this);
+        notificationHelper.showOngoingStatus(this);
     }
 
     @DebugLog
@@ -52,9 +51,13 @@ public class HostService extends Service {
         return null;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        ServiceStatusBroadcastReceiver.broadcast(this, false);
+    @Subcomponent
+    interface HostServiceComponent {
+        void inject(HostService service);
+
+        @Subcomponent.Builder
+        interface Builder {
+            HostServiceComponent build();
+        }
     }
 }

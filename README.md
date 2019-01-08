@@ -1,15 +1,9 @@
-#A full example to demonstrate foreground service, broadcast receiver and notification channel.
+#Android foreground service host to ensure that the service will always be running.
 
-
-###Command to test reboot broadcast receiver for emulator
-####It is only for emulator without Google Play prebuilt.
-
-step 1 : adb root
-
-step 2 : adb shell am broadcast -a android.intent.action.BOOT_COMPLETED -p edu.cs4730.foregroundservicedemo
-
-That's it.
-
-(Optional) If you want to be more specific:
-
-adb shell am broadcast -a android.intent.action.BOOT_COMPLETED -n edu.cs4730.foregroundservicedemo/edu.cs4730.foregroundservicedemo.DeviceRebootedBroadcastReceiver
+1, Support customized notification and notification action.
+2, Enable default notification title, notification icon and abort notification action.
+3, Support auto start configuration on device reboot.
+4, Support dynamically registering and deregistering the commensals.
+5, The host will die on the last deregisteration of commensal.
+6, The host will be born again on the first registration of commensal.
+7, The host provide an action of resume if such action is provided.
