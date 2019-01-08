@@ -4,7 +4,7 @@ apply plugin: 'com.jakewharton.hugo'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "io.github.android.tang.tony.beacon.demo"
+        applicationId "io.github.android.tang.tony.alien.demo"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
