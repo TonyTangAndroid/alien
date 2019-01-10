@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
+        attemptToScan();
     }
 
     @Override
@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick({R.id.btn_scan})
     public void register(View v) {
-
         if (bluetoothEnabled()) {
             activate();
         } else {
@@ -117,12 +116,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_TURN_ON_BLUETOOTH:
-                onBluetoothStatusUpdated(bluetoothEnabled());
+                attemptToScan();
                 break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
+    }
+
+    private void attemptToScan() {
+        onBluetoothStatusUpdated(bluetoothEnabled());
     }
 
     private void onBluetoothStatusUpdated(boolean enabled) {
