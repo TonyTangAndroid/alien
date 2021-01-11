@@ -26,6 +26,7 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.github.TonyTangAndroid:FileLogger:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
