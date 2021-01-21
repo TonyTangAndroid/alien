@@ -1,0 +1,9 @@
+spotless {
+    format 'misc', {
+        target '**/*.gradle'
+        // define the steps to apply to those files
+        indentWithSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}

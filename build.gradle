@@ -14,14 +14,19 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.github.sherter.google-java-format" version "0.8"
+    id 'com.diffplug.spotless' version '5.9.0'
+}
+
+apply from: "${rootDir}/config/spotless.gradle"
+apply from: "${rootDir}/config/google_java_format.gradle"
+
+
 allprojects {
     repositories {
         google()
         jcenter()
         maven { url 'https://jitpack.io' }
     }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }
