@@ -1,7 +1,6 @@
 package io.github.android.tang.tony.host;
 
 import android.content.Context;
-
 import dagger.BindsInstance;
 import dagger.Component;
 import io.github.android.tang.tony.host.config.Config;
@@ -10,22 +9,21 @@ import io.github.android.tang.tony.host.config.Config;
 @Component(modules = HostModule.class)
 interface HostComponent {
 
-    void inject(Host host);
+  void inject(Host host);
 
-    Config config();
+  Config config();
 
-    Context context();
+  Context context();
 
-    HostService.HostServiceComponent.Builder hostServiceComponentBuilder();
+  HostService.HostServiceComponent.Builder hostServiceComponentBuilder();
 
-    void inject(HostMutator broadcastReceiver);
+  void inject(HostMutator broadcastReceiver);
 
-    @Component.Builder
-    interface Builder {
-        HostComponent build();
+  @Component.Builder
+  interface Builder {
+    HostComponent build();
 
-        @BindsInstance
-        Builder config(Config config);
-
-    }
+    @BindsInstance
+    Builder config(Config config);
+  }
 }

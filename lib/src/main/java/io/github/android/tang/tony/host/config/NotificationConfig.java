@@ -1,129 +1,124 @@
 package io.github.android.tang.tony.host.config;
 
 import android.content.Intent;
-
-import com.google.auto.value.AutoValue;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
+import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class NotificationConfig {
 
+  public static Builder builder() {
+    return new AutoValue_NotificationConfig.Builder();
+  }
+
+  public abstract Channel channel();
+
+  public abstract UI ui();
+
+  public abstract Intent launchIntent();
+
+  @AutoValue.Builder
+  public abstract static class Builder {
+
+    public abstract Builder channel(Channel channel);
+
+    public abstract Builder ui(UI ui);
+
+    public abstract Builder launchIntent(Intent launchIntent);
+
+    public abstract NotificationConfig build();
+  }
+
+  @AutoValue
+  public abstract static class UI {
+
     public static Builder builder() {
-        return new AutoValue_NotificationConfig.Builder();
+      return new AutoValue_NotificationConfig_UI.Builder();
     }
 
-    public abstract Channel channel();
+    public abstract String title();
 
-    public abstract UI ui();
+    public abstract String body();
 
-    public abstract Intent launchIntent();
+    @DrawableRes
+    public abstract int smallIcon();
+
+    public abstract ActionConfig destruct();
+
+    @Nullable
+    public abstract ActionConfig deactivate();
+
+    @Nullable
+    public abstract ActionConfig activate();
 
     @AutoValue.Builder
     public abstract static class Builder {
+      public abstract Builder title(String title);
 
-        public abstract Builder channel(Channel channel);
+      public abstract Builder body(String body);
 
-        public abstract Builder ui(UI ui);
+      public abstract Builder smallIcon(@DrawableRes int smallIcon);
 
-        public abstract Builder launchIntent(Intent launchIntent);
+      public abstract Builder destruct(ActionConfig destruct);
 
-        public abstract NotificationConfig build();
+      public abstract Builder deactivate(ActionConfig deactivate);
+
+      public abstract Builder activate(ActionConfig activate);
+
+      public abstract UI build();
+    }
+  }
+
+  @AutoValue
+  public abstract static class Channel {
+
+    public static Builder builder() {
+      return new AutoValue_NotificationConfig_Channel.Builder();
     }
 
-    @AutoValue
-    public abstract static class UI {
+    public abstract String id();
 
-        public static Builder builder() {
-            return new AutoValue_NotificationConfig_UI.Builder();
-        }
+    public abstract String name();
 
-        public abstract String title();
+    public abstract int importance();
 
-        public abstract String body();
+    @AutoValue.Builder
+    public abstract static class Builder {
+      public abstract Builder id(String id);
 
-        @DrawableRes
-        public abstract int smallIcon();
+      public abstract Builder name(String name);
 
-        public abstract ActionConfig destruct();
+      public abstract Builder importance(int importance);
 
-        @Nullable
-        public abstract ActionConfig deactivate();
+      public abstract Channel build();
+    }
+  }
 
-        @Nullable
-        public abstract ActionConfig activate();
+  @AutoValue
+  public abstract static class ActionConfig {
 
-
-        @AutoValue.Builder
-        public abstract static class Builder {
-            public abstract Builder title(String title);
-
-            public abstract Builder body(String body);
-
-            public abstract Builder smallIcon(@DrawableRes int smallIcon);
-
-            public abstract Builder destruct(ActionConfig destruct);
-
-            public abstract Builder deactivate(ActionConfig deactivate);
-
-            public abstract Builder activate(ActionConfig activate);
-
-            public abstract UI build();
-
-
-        }
+    public static Builder builder() {
+      return new AutoValue_NotificationConfig_ActionConfig.Builder();
     }
 
-    @AutoValue
-    public abstract static class Channel {
+    @DrawableRes
+    public abstract int drawableId();
 
-        public static Builder builder() {
-            return new AutoValue_NotificationConfig_Channel.Builder();
-        }
+    public abstract String title();
 
-        public abstract String id();
+    @Nullable
+    public abstract String body();
 
-        public abstract String name();
+    @AutoValue.Builder
+    public abstract static class Builder {
+      public abstract Builder drawableId(int drawableId);
 
-        public abstract int importance();
+      public abstract Builder title(String title);
 
-        @AutoValue.Builder
-        public abstract static class Builder {
-            public abstract Builder id(String id);
+      public abstract Builder body(String body);
 
-            public abstract Builder name(String name);
-
-            public abstract Builder importance(int importance);
-
-            public abstract Channel build();
-        }
+      public abstract ActionConfig build();
     }
-
-    @AutoValue
-    public abstract static class ActionConfig {
-
-        public static Builder builder() {
-            return new AutoValue_NotificationConfig_ActionConfig.Builder();
-        }
-
-        @DrawableRes
-        public abstract int drawableId();
-
-        public abstract String title();
-
-        @Nullable
-        public abstract String body();
-
-        @AutoValue.Builder
-        public abstract static class Builder {
-            public abstract Builder drawableId(int drawableId);
-
-            public abstract Builder title(String title);
-
-            public abstract Builder body(String body);
-
-            public abstract ActionConfig build();
-        }
-    }
+  }
 }
